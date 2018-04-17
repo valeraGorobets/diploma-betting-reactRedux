@@ -29,13 +29,13 @@ class Chart extends Component {
 
     componentWillReceiveProps (nextProps) {
       let newDataArray = [];
-      if(!nextProps){
-        return;
-      }
-      for(const chart in nextProps) {
+      for(const attr in nextProps) {
+        if(!nextProps[attr]){
+          return;
+        }
         let config = {};
-          if(chart === 'candlestick'){
-            const { Date, Open, Close, High, Low, Name} = nextProps[chart];
+          if(attr === 'candlestick'){
+            const { Date, Open, Close, High, Low, Name} = nextProps[attr];
             config = {
               name: Name,
               x: Date,
@@ -50,8 +50,8 @@ class Chart extends Component {
               xaxis: 'x',
               yaxis: 'y'
             }
-          } else if(chart === 'scatter'){
-            const { Date, Values, Name} = nextProps[chart];
+          } else if(attr === 'scatter'){
+            const { Date, Values, Name} = nextProps[attr];
             config = {
               x: Date,
               y: Values,
@@ -64,7 +64,8 @@ class Chart extends Component {
           newDataArray.push(config);
       }
       this.setState({
-        data: newDataArray
+        data: newDataArray,
+        layout: Object.assign(this.state.layout, {title: nextProps.name})
       });
     }
 
