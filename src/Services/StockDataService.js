@@ -7,7 +7,7 @@ export default class StockDataService {
   }
 
   requestStocksFromLocal(company = 'epam') {
-    let data = require(`./${company}.json`).slice(-this.period);
+    let data = require(`./company/${company}.json`).slice(-this.period);
     data = this.transformDataForChart(data);
     data.Name = company;
     return new Promise((resolve, reject) => {
