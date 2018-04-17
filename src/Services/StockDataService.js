@@ -1,5 +1,4 @@
 import axios from 'axios';
-import csv from 'csvtojson';
 
 export default class StockDataService {
 
@@ -7,10 +6,34 @@ export default class StockDataService {
     this.period = period;
   }
 
+  requestStocksFromLocal(company = 'epam') {
+    let data = require(`./${company}.json`).slice(-this.period);
+    data = this.transformDataForChart(data);
+    data.Name = company;
+    return new Promise((resolve, reject) => {
+      resolve(data);
+    });
+  }
+  
+  transformDataForChart(data) {
+    const obj = {
+      Date: [],
+      Open: [],
+      Close: [],
+      High: [],
+      Low: []
+    };
+    data.forEach(day => {
+      for (const key in obj) {
+        obj[key].push(day[key]);
+      }
+    });
+    return obj;
+  }
+
   requestStocksFromGoogleFinance(company = 'EPAM'): Promise<Array<any>> {
     const today = this.getDateAgo(0);
     const fromDate = this.getDateAgo(this.period);
-    let stocks = [];
     return new Promise((resolve, reject) => {
       axios.get(`https://www.quandl.com/api/v1/datasets/WIKI/${company}.csv?column=4&sort_order=asc&trim_start=${fromDate}&trim_end=${today}`)
         .then(function (response) {
