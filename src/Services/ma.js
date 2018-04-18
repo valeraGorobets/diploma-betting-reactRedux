@@ -8,7 +8,19 @@ class MA {
   shouldInvest(currentPrice, data) {
   }
 
-  countMA(data) {
-    return data.reduce((total, value) => total + value)/data.length;
+  calculate(data) {
+    let result = new Array(this.period);
+    for(let i = this.period; i <= data.length; i++){
+      const d = data.slice(i-this.period, i);
+      const res = this.count(d);
+      result.push(res);
+    }
+    return result;
+  }
+
+  count(data) {
+    return data.slice(-this.period).reduce((total, value) => total + value) / this.period;
   }
 }
+
+export default MA;
