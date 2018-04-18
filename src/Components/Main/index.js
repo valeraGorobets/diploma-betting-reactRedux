@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 import Chart from '../Chart';
+import Analytics from '../Analytics';
 
 export default class Main extends Component {
 
@@ -9,38 +10,39 @@ export default class Main extends Component {
     super(props);
     this.state = {
     }
-    this.StockDataService = new StockDataService(30);
-    this.StockDataService.requestStocksFromLocal('epam').then(response => {
-      this.setState({
-        Date: response.Date,
-        epamCompanyData: response,
-        epamScatter: {
-          Name: 'Close',
-          Date: response.Date,
-          Values: response.Close
-        }
-      })
-    });
-    this.StockDataService.requestStocksFromLocal('apple').then(response => {
-      this.setState({
-        Date: response.Date,
-        appleCompanyData: response,
-        appleScatter: {
-          Name: 'Close',
-          Date: response.Date,
-          Values: response.Close
-        }
-      })
-    });
+    this.StockDataService = new StockDataService(250);
+    // this.StockDataService.requestStocksFromLocal('epam').then(response => {
+    //   this.setState({
+    //     Date: response.Date,
+    //     epamCompanyData: response,
+    //     epamScatter: {
+    //       Name: 'Close',
+    //       Date: response.Date,
+    //       Values: response.Close
+    //     }
+    //   })
+    // });
+    // this.StockDataService.requestStocksFromLocal('apple').then(response => {
+    //   this.setState({
+    //     Date: response.Date,
+    //     appleCompanyData: response,
+    //     appleScatter: {
+    //       Name: 'Close',
+    //       Date: response.Date,
+    //       Values: response.Close
+    //     }
+    //   })
+    // });
     this.StockDataService.requestStocksFromLocal('google').then(response => {
       this.setState({
         Date: response.Date,
-        googleCompanyData: response,
-        googleScatter: {
+        companyData: response,
+        scatter: {
           Name: 'Close',
           Date: response.Date,
           Values: response.Close
-        }
+        },
+        dataForAnalytics: {Date: response.Date, data: response}
       })
     });
   }
@@ -48,10 +50,8 @@ export default class Main extends Component {
   render() {
     return ( 
       <div className="container">
-        <h2>React redux template</h2>
-         <Chart name='Epam Systems' candlestick={this.state.epamCompanyData} scatter={this.state.epamScatter}/>
-         <Chart name='Apple' candlestick={this.state.appleCompanyData} scatter={this.state.appleScatter}/>
-         <Chart name='Google' candlestick={this.state.googleCompanyData} scatter={this.state.googleScatter}/>
+         <Chart name='google' candlestick={this.state.companyData} scatter={this.state.scatter}/>
+         <Analytics dataForAnalytics={this.state.dataForAnalytics}></Analytics>
       </div>
     );
   }
