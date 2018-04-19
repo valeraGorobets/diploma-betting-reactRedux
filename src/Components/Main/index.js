@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import './styles.css';
 import StockDataService from './../../Services/StockDataService';
-import Chart from '../Chart';
-import Analytics from '../Analytics';
+// import Chart from '../Chart';
+// import AnalyticsMA from '../AnalyticsMA';
+import AnalyticsMACD from '../AnalyticsMACD';
 
 export default class Main extends Component {
 
@@ -10,7 +11,7 @@ export default class Main extends Component {
     super(props);
     this.state = {
     }
-    this.StockDataService = new StockDataService(250);
+    this.StockDataService = new StockDataService(150);
     // this.StockDataService.requestStocksFromLocal('epam').then(response => {
     //   this.setState({
     //     Date: response.Date,
@@ -47,11 +48,11 @@ export default class Main extends Component {
     });
   }
 
+         // <Chart name='google' candlestick={this.state.companyData} scatter={this.state.scatter}/>
   render() {
     return ( 
       <div className="container">
-         <Chart name='google' candlestick={this.state.companyData} scatter={this.state.scatter}/>
-         <Analytics dataForAnalytics={this.state.dataForAnalytics}></Analytics>
+         <AnalyticsMACD dataForAnalytics={this.state.dataForAnalytics}></AnalyticsMACD>
       </div>
     );
   }

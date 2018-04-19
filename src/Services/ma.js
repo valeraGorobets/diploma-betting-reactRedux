@@ -1,5 +1,3 @@
-import indicator from './indicator';
-
 class MA {
   constructor(period) {
     this.period = period;
@@ -9,7 +7,7 @@ class MA {
   }
 
   calculate(data) {
-    let result = new Array(this.period);
+    let result = new Array(this.period-1);
     for(let i = this.period; i <= data.length; i++){
       const d = data.slice(i-this.period, i);
       const res = this.count(d);
