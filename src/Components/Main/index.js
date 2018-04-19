@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 // import Chart from '../Chart';
-// import AnalyticsMA from '../AnalyticsMA';
-import AnalyticsMACD from '../AnalyticsMACD';
+import AnalyticsMA from '../AnalyticsMA';
+// import AnalyticsMACD from '../AnalyticsMACD';
 
 export default class Main extends Component {
 
@@ -52,7 +52,7 @@ export default class Main extends Component {
   render() {
     return ( 
       <div className="container">
-         <AnalyticsMACD dataForAnalytics={this.state.dataForAnalytics}></AnalyticsMACD>
+         <AnalyticsMA dataForAnalytics={this.state.dataForAnalytics}></AnalyticsMA>
       </div>
     );
   }
