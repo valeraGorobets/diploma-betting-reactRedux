@@ -71,6 +71,14 @@ class Chart extends Component {
             marker: { color: `${this.getNextColor()}` },
             name: Name
           }
+        } else if (attr.startsWith('bar')) {
+          const { Date, Values, Name } = nextProps[attr];
+          config = {
+            x: Date,
+            y: Values,
+            type: 'bar',
+            name: Name
+          }
         }
         newDataArray.push(config);
       }
