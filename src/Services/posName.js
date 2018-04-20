@@ -1,5 +1,5 @@
 export default {
-	long,
-	short,
-	none
+	LONG: 'LONG',
+	SHORT: 'SHORT',
+	NONE: 'NONE'
 }
