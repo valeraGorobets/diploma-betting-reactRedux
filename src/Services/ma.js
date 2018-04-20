@@ -1,5 +1,5 @@
 class MA {
-  constructor(period) {
+  constructor(period = 1) {
     this.period = period;
   }
 
