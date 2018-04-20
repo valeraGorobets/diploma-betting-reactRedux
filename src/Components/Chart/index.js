@@ -7,8 +7,8 @@ class Chart extends Component {
       this.state = {
         data: [],
         layout: {
-          width: 1000,
-          height: 600,
+          width: 900,
+          height: 500,
           dragmode: 'zoom',
           margin: {
               r: 10,
@@ -78,6 +78,26 @@ class Chart extends Component {
             y: Values,
             type: 'bar',
             name: Name
+          }
+        } else if(attr.startsWith('fillAreaLow')){
+          const { Date, Value } = nextProps[attr];
+          config = {
+            x: Date,
+            y: new Array(Date.length).fill(Value),
+            type: 'scatter',
+            showlegend: false,
+            hoverinfo: 'none'
+          }
+        }
+        else if(attr.startsWith('fillAreaHeight')){
+          const { Date, Value } = nextProps[attr];
+          config = {
+            x: Date,
+            y: new Array(Date.length).fill(Value),
+            fill: 'tonexty',
+            type: 'scatter',
+            showlegend: false,
+            hoverinfo: 'none'
           }
         }
         newDataArray.push(config);
