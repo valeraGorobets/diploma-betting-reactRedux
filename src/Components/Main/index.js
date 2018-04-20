@@ -3,7 +3,7 @@ import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 import Chart from '../Chart';
 
-import Analytics from '../AnalyticsRSI';
+import Analytics from '../AnalyticsSTOCHASTIC';
 
 export default class Main extends Component {
 
