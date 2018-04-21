@@ -6,8 +6,8 @@ import Chart from '../Chart';
 class AnalyticsRSI extends Component {
     constructor(props) {
       super(props);
-      this.lowValue = 20;
-      this.heightValue = 80;
+      this.bottomLevel = 30;
+      this.topLevel = 70;
       this.state = {}
     }
 
@@ -21,11 +21,11 @@ class AnalyticsRSI extends Component {
         },
         fillAreaLow: {
           Date: nextProps.dataForAnalytics.Date,
-          Value: this.lowValue
+          Value: this.bottomLevel
         },
         fillAreaHeight: {
           Date: nextProps.dataForAnalytics.Date,
-          Value: this.heightValue
+          Value: this.topLevel
         }
       });
     }
