@@ -32,9 +32,10 @@ class MA {
   }
 
   calculate(data) {
+    const {Close} = data;
     let result = new Array(this.period-1);
-    for(let i = this.period; i <= data.length; i++){
-      const d = data.slice(i-this.period, i);
+    for(let i = this.period; i <= Close.length; i++){
+      const d = Close.slice(i-this.period, i);
       const res = this.count(d);
       result.push(res);
     }

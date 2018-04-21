@@ -45,9 +45,10 @@ class MACD {
   }
 
   calculate(data) {
+    const {Close} = data;
     const ema = new EMA(this.signalPeriod);
-    const emaShort = new EMA(this.shortPeriod).calculate(data);
-    const emaLong = new EMA(this.longPeriod).calculate(data);
+    const emaShort = new EMA(this.shortPeriod).calculate(Close);
+    const emaLong = new EMA(this.longPeriod).calculate(Close);
     const MACD = this.difference(emaShort, emaLong);
     const SIGNAL = ema.calculate(MACD);
     const HIST = this.difference(MACD, SIGNAL);

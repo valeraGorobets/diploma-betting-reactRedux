@@ -5,19 +5,21 @@ import Chart from '../Chart';
 class AnalyticsMA extends Component {
     constructor(props) {
       super(props);
+      this.MALength = 21;
       this.state = {};
     }
 
     componentWillReceiveProps(nextProps) {
+      const ma = new MA(this.MALength);
       this.setState({
         data: nextProps.dataForAnalytics.data,
         scatterMA21: {
           Name: 'MA21',
           Date: nextProps.dataForAnalytics.Date,
-          Values: new MA(21).calculate(nextProps.dataForAnalytics.data.Close)
+          Values: ma).calculate(nextProps.dataForAnalytics.data)
         }
       });
-      new MA(21).simulate(nextProps.dataForAnalytics.data, true)
+      ma.simulate(nextProps.dataForAnalytics.data, true)
     }
 
     render() {

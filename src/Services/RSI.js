@@ -32,12 +32,13 @@ class RSI {
   }
 
   calculate(data) {
+    const {Close} = data;
     let result = new Array(this.period);
-    let firstRSI = this.countInitRSI(data.slice(0, this.period+1));
+    let firstRSI = this.countInitRSI(Close.slice(0, this.period+1));
     result.push(firstRSI);
 
-    for(let i = this.period + 1; i <= data.length; i++){
-      const d = data.slice(i-this.period, i+1);
+    for(let i = this.period + 1; i <= Close.length; i++){
+      const d = Close.slice(i-this.period, i+1);
       const res = this.countSmoothedRSI(d);
       result.push(res);
     }
