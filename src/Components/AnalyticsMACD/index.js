@@ -33,9 +33,9 @@ class AnalyticsMACD extends Component {
 
     render() {
       return ( 
-       <div>
+        <div>
           <Chart name='AnalyticsMACD' scatterMACD={this.state.scatterMACD} scatterSIGNAL={this.state.scatterSIGNAL} barHIST={this.state.barHIST}/>
-       </div>
+        </div>
       )
     }
 }

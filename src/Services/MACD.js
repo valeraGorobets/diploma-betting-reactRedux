@@ -1,5 +1,5 @@
-import MA from './MA.js';
 import EMA from './EMA.js';
+import posName from './posName.js';
 
 class MACD {
   constructor(shortPeriod, longPeriod, signalPeriod) {
@@ -8,7 +8,27 @@ class MACD {
     this.signalPeriod = signalPeriod;
   }
 
-  shouldInvest(currentPrice, data) {
+  simulate(data) {
+    const {Date, Close} = data;
+    for(let i = 30; i<=Close.length; i++){
+      let knownData = Close.slice(0, i);
+      let si = this.shouldInvest(knownData);
+      if(si !== posName.NONE){
+        console.log(`Date: ${Date.slice(0, i).pop()}; Should Invest: ${si}`)
+      }
+    }
+  }
+
+  shouldInvest(data) {
+    const today = this.count(data.slice(-this.longPeriod));
+    const yesterday = this.count(data.slice(-this.longPeriod-1, -1));
+    if(today.MACD < 0 && yesterday.HIST < 0 && today.HIST > 0) {
+      return posName.LONG;
+    } else if(today.MACD > 0 && yesterday.HIST > 0 && today.HIST < 0) {
+      return posName.SHORT;
+    } else {
+      return posName.NONE;
+    }
   }
 
   difference(set1, set2) {
@@ -23,17 +43,17 @@ class MACD {
   }
 
   calculate(data) {
-    const ma = new MA(this.signalPeriod);
+    const ema = new EMA(this.signalPeriod);
     const emaShort = new EMA(this.shortPeriod).calculate(data);
     const emaLong = new EMA(this.longPeriod).calculate(data);
     const MACD = this.difference(emaShort, emaLong);
-    const SIGNAL = ma.calculate(MACD);
+    const SIGNAL = ema.calculate(MACD);
     const HIST = this.difference(MACD, SIGNAL);
     return {MACD, SIGNAL, HIST};
   }
 
   count(data) {
-    const calculation = this.calculate(data);
+    const calculation = this.calculate(data.slice(-this.longPeriod));
     return {
       MACD: calculation.MACD.pop(),
       SIGNAL: calculation.SIGNAL.pop(),

@@ -19,7 +19,7 @@ class MA {
     const todayPrice = data[data.length - 1];
     const yesterdayPrice = data[data.length - 2];
     const todayMA = this.count(data.slice(-this.period));
-    const yesterdayMA = this.count(data.slice(-this.period - 1));
+    const yesterdayMA = this.count(data.slice(-this.period-1, -1));
     if(yesterdayMA > yesterdayPrice && todayMA < todayPrice) {
       return posName.LONG;
     } else if(yesterdayMA < yesterdayPrice && todayMA > todayPrice) {

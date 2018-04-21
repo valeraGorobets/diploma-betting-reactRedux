@@ -3,7 +3,7 @@ import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 import Chart from '../Chart';
 
-import Analytics from '../AnalyticsMA';
+import Analytics from '../AnalyticsMACD';
 
 export default class Main extends Component {
 
@@ -11,7 +11,7 @@ export default class Main extends Component {
     super(props);
     this.state = {
     }
-    this.StockDataService = new StockDataService(300);
+    this.StockDataService = new StockDataService(150);
     // this.StockDataService.requestStocksFromLocal('epam').then(response => {
     //   this.setState({
     //     Date: response.Date,
