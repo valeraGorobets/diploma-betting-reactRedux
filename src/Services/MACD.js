@@ -8,23 +8,25 @@ class MACD {
     this.signalPeriod = signalPeriod;
   }
 
-  simulate(data) {
+  simulate(data, isPartOfStrategy) {
     const {Date, Close} = data;
     for(let i = 30; i<=Close.length; i++){
       let knownData = Close.slice(0, i);
-      let si = this.shouldInvest(knownData);
+      let si = this.shouldInvest(knownData, isPartOfStrategy);
       if(si !== posName.NONE){
         console.log(`Date: ${Date.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
   }
 
-  shouldInvest(data) {
+  shouldInvest(data, isPartOfStrategy) {
     const today = this.count(data.slice(-this.longPeriod));
     const yesterday = this.count(data.slice(-this.longPeriod-1, -1));
-    if(today.MACD < 0 && yesterday.HIST < 0 && today.HIST > 0) {
+    if((today.MACD < 0 && yesterday.HIST < 0 && today.HIST > 0) || 
+      (isPartOfStrategy && today.HIST > 0)) {
       return posName.LONG;
-    } else if(today.MACD > 0 && yesterday.HIST > 0 && today.HIST < 0) {
+    } else if((today.MACD > 0 && yesterday.HIST > 0 && today.HIST < 0) ||
+      (isPartOfStrategy && today.HIST < 0)) {
       return posName.SHORT;
     } else {
       return posName.NONE;

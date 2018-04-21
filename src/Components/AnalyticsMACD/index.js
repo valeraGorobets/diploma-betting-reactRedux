@@ -29,6 +29,7 @@ class AnalyticsMACD extends Component {
           Values: macd.calculate(nextProps.dataForAnalytics.data.Close).HIST
         }
       });
+      macd.simulate(nextProps.dataForAnalytics.data.Close, true)
     }
 
     render() {
