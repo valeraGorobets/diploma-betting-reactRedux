@@ -18,13 +18,13 @@ class RSI {
   }
 
   shouldInvest(data, isPartOfStrategy) {
-    const today = this.count(data);
-    const yesterday = this.count(data.slice(0, data.length - 1));
-    if((yesterday < this.bottomLevel && today > this.bottomLevel) || 
-      (isPartOfStrategy && today < this.bottomLevel)) {
+    const todayRSI = this.count(data);
+    const yesterdayRSI = this.count(data.slice(0, data.length - 1));
+    if((yesterdayRSI < this.bottomLevel && todayRSI > this.bottomLevel) || 
+      (isPartOfStrategy && todayRSI < this.bottomLevel)) {
       return posName.LONG;
-    } else if((yesterday > this.topLevel && today < this.topLevel)|| 
-      (isPartOfStrategy && today > this.topLevel)) {
+    } else if((yesterdayRSI > this.topLevel && todayRSI < this.topLevel)|| 
+      (isPartOfStrategy && todayRSI > this.topLevel)) {
       return posName.SHORT;
     } else {
       return posName.NONE;
