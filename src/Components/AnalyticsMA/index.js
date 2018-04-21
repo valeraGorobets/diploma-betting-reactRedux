@@ -17,7 +17,7 @@ class AnalyticsMA extends Component {
           Values: new MA(21).calculate(nextProps.dataForAnalytics.data.Close)
         }
       });
-      new MA(21).simulate(nextProps.dataForAnalytics.data)
+      new MA(21).simulate(nextProps.dataForAnalytics.data, true)
     }
 
     render() {

@@ -4,25 +4,27 @@ class MA {
     this.period = period;
   }
 
-  simulate(data) {
+  simulate(data, isPartOfStrategy) {
     const {Date, Close} = data;
     for(let i = 30; i<=Close.length; i++){
       let knownData = Close.slice(0, i);
-      let si = this.shouldInvest(knownData);
+      let si = this.shouldInvest(knownData, isPartOfStrategy);
       if(si !== posName.NONE){
         console.log(`Date: ${Date.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
   }
 
-  shouldInvest(data) {
+  shouldInvest(data, isPartOfStrategy) {
     const todayPrice = data[data.length - 1];
     const yesterdayPrice = data[data.length - 2];
     const todayMA = this.count(data.slice(-this.period));
     const yesterdayMA = this.count(data.slice(-this.period-1, -1));
-    if(yesterdayMA > yesterdayPrice && todayMA < todayPrice) {
+    if((yesterdayMA > yesterdayPrice && todayMA < todayPrice) ||
+      (isPartOfStrategy && todayMA < todayPrice)) {
       return posName.LONG;
-    } else if(yesterdayMA < yesterdayPrice && todayMA > todayPrice) {
+    } else if((yesterdayMA < yesterdayPrice && todayMA > todayPrice) || 
+      (isPartOfStrategy && todayMA > todayPrice)) {
       return posName.SHORT;
     } else {
       return posName.NONE;
