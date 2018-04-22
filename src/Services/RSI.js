@@ -6,20 +6,19 @@ class RSI {
     this.topLevel = topLevel;
   }
 
-  simulate(data, isPartOfStrategy) {
-    const {Date, Close} = data;
-    for(let i = 30; i<=Close.length; i++){
-      let knownData = Close.slice(0, i);
-      let si = this.shouldInvest(knownData, isPartOfStrategy);
+  simulate(array, dates, isPartOfStrategy) {
+    for(let i = 30; i<=array.length; i++){
+      let knownArray = array.slice(0, i);
+      let si = this.shouldInvest(knownArray, isPartOfStrategy);
       if(si !== posName.NONE){
-        console.log(`Date: ${Date.slice(0, i).pop()}; Should Invest: ${si}`)
+        console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
   }
 
-  shouldInvest(data, isPartOfStrategy) {
-    const todayRSI = this.count(data);
-    const yesterdayRSI = this.count(data.slice(0, data.length - 1));
+  shouldInvest(array, isPartOfStrategy) {
+    const todayRSI = this.count(array);
+    const yesterdayRSI = this.count(array.slice(0, array.length - 1));
     if((yesterdayRSI < this.bottomLevel && todayRSI > this.bottomLevel) || 
       (isPartOfStrategy && todayRSI < this.bottomLevel)) {
       return posName.LONG;
@@ -31,29 +30,28 @@ class RSI {
     }
   }
 
-  calculate(data) {
-    const {Close} = data;
+  calculate(array) {
     let result = new Array(this.period);
-    let firstRSI = this.countInitRSI(Close.slice(0, this.period+1));
+    let firstRSI = this.countInitRSI(array.slice(0, this.period+1));
     result.push(firstRSI);
 
-    for(let i = this.period + 1; i <= Close.length; i++){
-      const d = Close.slice(i-this.period, i+1);
+    for(let i = this.period + 1; i <= array.length; i++){
+      const d = array.slice(i-this.period, i+1);
       const res = this.countSmoothedRSI(d);
       result.push(res);
     }
     return result;
   }
 
-  count(data) {
-    return this.calculate(data)[data.length-1];
+  count(array) {
+    return this.calculate(array)[array.length-1];
   }
 
-  countInitRSI(data) {
+  countInitRSI(array) {
     let sumGain = 0;
     let sumLoss = 0;
     for (let i = 1; i <= this.period-1; i++) {
-      const difference = data[i] - data[i - 1];
+      const difference = array[i] - array[i - 1];
       if (difference >= 0) {
         sumGain += difference;
       } else {
@@ -66,10 +64,10 @@ class RSI {
     return 100 - (100 / (1 + this.avSumGain/this.avSumLoss));
   }
 
-  countSmoothedRSI(data) {
+  countSmoothedRSI(array) {
     let sumGain = 0;
     let sumLoss = 0;
-    const difference = data[data.length - 1] - data[data.length - 2];
+    const difference = array[array.length - 1] - array[array.length - 2];
     if (difference >= 0) {
       sumGain += difference;
     } else {

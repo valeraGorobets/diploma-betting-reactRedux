@@ -10,26 +10,28 @@ class AnalyticsMACD extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-      const macdResult = new MACD(12, 26, 9).calculate(nextProps.dataForAnalytics.data);
+      const props = nextProps.companyData;
+      const macd = new MACD(12, 26, 9);
+      const macdResult = macd.calculate(props.Close);
       this.setState({
-        data: nextProps.dataForAnalytics.data,
+        data: props,
         scatterMACD: {
           Name: 'MACD',
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Values: macdResult.MACD
         },
         scatterSIGNAL: {
           Name: 'SIGNAL',
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Values: macdResult.SIGNAL
         },
         barHIST: {
           Name: 'HIST',
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Values: macdResult.HIST
         }
       });
-      macd.simulate(nextProps.dataForAnalytics.data, true)
+      macd.simulate(props.Close, props.Date, true);
     }
 
     render() {

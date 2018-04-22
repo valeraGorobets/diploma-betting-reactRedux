@@ -4,22 +4,21 @@ class MA {
     this.period = period;
   }
 
-  simulate(data, isPartOfStrategy) {
-    const {Date, Close} = data;
-    for(let i = 30; i<=Close.length; i++){
-      let knownData = Close.slice(0, i);
-      let si = this.shouldInvest(knownData, isPartOfStrategy);
+  simulate(array, dates, isPartOfStrategy) {
+    for(let i = 30; i<=array.length; i++){
+      let knownArray = array.slice(0, i);
+      let si = this.shouldInvest(knownArray, isPartOfStrategy);
       if(si !== posName.NONE){
-        console.log(`Date: ${Date.slice(0, i).pop()}; Should Invest: ${si}`)
+        console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
   }
 
-  shouldInvest(data, isPartOfStrategy) {
-    const todayPrice = data[data.length - 1];
-    const yesterdayPrice = data[data.length - 2];
-    const todayMA = this.count(data.slice(-this.period));
-    const yesterdayMA = this.count(data.slice(-this.period-1, -1));
+  shouldInvest(array, isPartOfStrategy) {
+    const todayPrice = array[array.length - 1];
+    const yesterdayPrice = array[array.length - 2];
+    const todayMA = this.count(array.slice(-this.period));
+    const yesterdayMA = this.count(array.slice(-this.period-1, -1));
     if((yesterdayMA > yesterdayPrice && todayMA < todayPrice) ||
       (isPartOfStrategy && todayMA < todayPrice)) {
       return posName.LONG;
@@ -31,19 +30,20 @@ class MA {
     }
   }
 
-  calculate(data) {
-    const {Close} = data;
-    let result = new Array(this.period-1);
-    for(let i = this.period; i <= Close.length; i++){
-      const d = Close.slice(i-this.period, i);
+  calculate(array) {
+    const amountOnUndefindes = array.findIndex(el => Number(el));
+    array = array.filter(Number);
+    let result = new Array(amountOnUndefindes + this.period-1);
+    for(let i = this.period; i <= array.length; i++){
+      const d = array.slice(i-this.period, i);
       const res = this.count(d);
       result.push(res);
     }
     return result;
   }
 
-  count(data) {
-    return data.slice(-this.period).reduce((total, value) => total + value) / this.period;
+  count(array) {
+    return array.slice(-this.period).reduce((total, value) => total + value) / this.period;
   }
 }
 

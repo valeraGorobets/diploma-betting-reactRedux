@@ -13,23 +13,25 @@ class AnalyticsRSI extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
+      const props = nextProps.companyData;
       const rsi = new RSI(this.RSILength);
       this.setState({
-        data: nextProps.dataForAnalytics.data,
+        data: props,
         scatterRSI14: {
           Name: 'RSI14',
-          Date: nextProps.dataForAnalytics.Date,
-          Values: rsi.calculate(nextProps.dataForAnalytics.data)
+          Date: props.Date,
+          Values: rsi.calculate(props.Close)
         },
         fillAreaLow: {
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Value: this.bottomLevel
         },
         fillAreaHeight: {
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Value: this.topLevel
         }
       });
+      rsi.simulate(props.Close, props.Date, true);
     }
 
     render() {

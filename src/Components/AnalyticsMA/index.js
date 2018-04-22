@@ -12,14 +12,14 @@ class AnalyticsMA extends Component {
     componentWillReceiveProps(nextProps) {
       const ma = new MA(this.MALength);
       this.setState({
-        data: nextProps.dataForAnalytics.data,
+        data: nextProps.companyData,
         scatterMA21: {
           Name: 'MA21',
-          Date: nextProps.dataForAnalytics.Date,
-          Values: ma).calculate(nextProps.dataForAnalytics.data)
+          Date: nextProps.companyData.Date,
+          Values: ma.calculate(nextProps.companyData.Close)
         }
       });
-      ma.simulate(nextProps.dataForAnalytics.data, true)
+      ma.simulate(nextProps.companyData.Close, nextProps.companyData.Date, true)
     }
 
     render() {

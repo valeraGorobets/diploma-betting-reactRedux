@@ -2,38 +2,43 @@ import React, { Component } from 'react';
 import STOCHASTIC from '../../Services/STOCHASTIC.js';
 import Chart from '../Chart';
 
-
 class AnalyticsSTOCHASTIC extends Component {
     constructor(props) {
       super(props);
+      this.kPeriod = 14;
+      this.dPeriod = 3;
+      this.smooth = 3;
       this.lowValue = 20;
       this.heightValue = 80;
       this.state = {};
     }
 
     componentWillReceiveProps(nextProps) {
-      const stochastic = new STOCHASTIC(14, 3).calculate(nextProps.dataForAnalytics.data);
+      const props = nextProps.companyData;
+      const stochastic = new STOCHASTIC(this.kPeriod, this.dPeriod, this.smooth, this.lowValue, this.heightValue);
+      const stochasticResults = stochastic.calculate(props.Close, props.High, props.Low);
       this.setState({
-        data: nextProps.dataForAnalytics.data,
+        data: props.data,
         scatterSTOCHASTIC: {
           Name: 'STOCHASTIC',
-          Date: nextProps.dataForAnalytics.Date,
-          Values: stochastic.K
+          Date: props.Date,
+          Values: stochasticResults.K
         },
         scatterD: {
           Name: 'D',
-          Date: nextProps.dataForAnalytics.Date,
-          Values: stochastic.D
+          Date: props.Date,
+          Values: stochasticResults.D
         },
         fillAreaLow: {
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Value: this.lowValue
         },
         fillAreaHeight: {
-          Date: nextProps.dataForAnalytics.Date,
+          Date: props.Date,
           Value: this.heightValue
         }
       });
+      stochastic.simulate(props.Close, props.High, props.Low, props.Date, false);
     }
 
     render() {

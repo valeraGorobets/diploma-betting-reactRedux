@@ -3,7 +3,7 @@ import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 import Chart from '../Chart';
 
-import Analytics from '../AnalyticsRSI';
+import Analytics from '../AnalyticsSTOCHASTIC';
 
 export default class Main extends Component {
 
@@ -11,7 +11,7 @@ export default class Main extends Component {
     super(props);
     this.state = {
     }
-    this.StockDataService = new StockDataService(150);
+    this.StockDataService = new StockDataService(100);
     // this.StockDataService.requestStocksFromLocal('epam').then(response => {
     //   this.setState({
     //     Date: response.Date,
@@ -42,8 +42,7 @@ export default class Main extends Component {
           Name: 'Close',
           Date: response.Date,
           Values: response.Close
-        },
-        dataForAnalytics: {Date: response.Date, data: response}
+        }
       })
     });
   }
@@ -52,7 +51,7 @@ export default class Main extends Component {
     return ( 
       <div className="container">
          <Chart name='google' candlestick={this.state.companyData} />
-         <Analytics dataForAnalytics={this.state.dataForAnalytics}></Analytics>
+         <Analytics companyData={this.state.companyData}></Analytics>
       </div>
     );
   }
