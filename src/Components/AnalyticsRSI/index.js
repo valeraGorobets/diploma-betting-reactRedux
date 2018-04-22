@@ -6,28 +6,32 @@ import Chart from '../Chart';
 class AnalyticsRSI extends Component {
     constructor(props) {
       super(props);
-      this.lowValue = 20;
-      this.heightValue = 80;
+      this.RSILength = 14;
+      this.bottomLevel = 30;
+      this.topLevel = 70;
       this.state = {}
     }
 
     componentWillReceiveProps(nextProps) {
+      const props = nextProps.companyData;
+      const rsi = new RSI(this.RSILength);
       this.setState({
-        data: nextProps.dataForAnalytics.data,
+        data: props,
         scatterRSI14: {
           Name: 'RSI14',
-          Date: nextProps.dataForAnalytics.Date,
-          Values: new RSI(14).calculate(nextProps.dataForAnalytics.data.Close)
+          Date: props.Date,
+          Values: rsi.calculate(props.Close)
         },
         fillAreaLow: {
-          Date: nextProps.dataForAnalytics.Date,
-          Value: this.lowValue
+          Date: props.Date,
+          Value: this.bottomLevel
         },
         fillAreaHeight: {
-          Date: nextProps.dataForAnalytics.Date,
-          Value: this.heightValue
+          Date: props.Date,
+          Value: this.topLevel
         }
       });
+      rsi.simulate(props.Close, props.Date, true);
     }
 
     render() {

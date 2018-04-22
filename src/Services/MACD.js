@@ -1,5 +1,5 @@
-import MA from './MA.js';
 import EMA from './EMA.js';
+import posName from './posName.js';
 
 class MACD {
   constructor(shortPeriod, longPeriod, signalPeriod) {
@@ -8,7 +8,28 @@ class MACD {
     this.signalPeriod = signalPeriod;
   }
 
-  shouldInvest(currentPrice, data) {
+  simulate(array, dates, isPartOfStrategy) {
+    for(let i = 30; i<=array.length; i++){
+      let knownArray = array.slice(0, i);
+      let si = this.shouldInvest(knownArray, isPartOfStrategy);
+      if(si !== posName.NONE){
+        console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
+      }
+    }
+  }
+
+  shouldInvest(array, isPartOfStrategy) {
+    const today = this.count(array.slice(-this.longPeriod));
+    const yesterday = this.count(array.slice(-this.longPeriod-1, -1));
+    if((today.MACD < 0 && yesterday.HIST < 0 && today.HIST > 0) || 
+      (isPartOfStrategy && today.HIST > 0)) {
+      return posName.LONG;
+    } else if((today.MACD > 0 && yesterday.HIST > 0 && today.HIST < 0) ||
+      (isPartOfStrategy && today.HIST < 0)) {
+      return posName.SHORT;
+    } else {
+      return posName.NONE;
+    }
   }
 
   difference(set1, set2) {
@@ -22,18 +43,18 @@ class MACD {
     return result;
   }
 
-  calculate(data) {
-    const ma = new MA(this.signalPeriod);
-    const emaShort = new EMA(this.shortPeriod).calculate(data);
-    const emaLong = new EMA(this.longPeriod).calculate(data);
+  calculate(array) {
+    const ema = new EMA(this.signalPeriod);
+    const emaShort = new EMA(this.shortPeriod).calculate(array);
+    const emaLong = new EMA(this.longPeriod).calculate(array);
     const MACD = this.difference(emaShort, emaLong);
-    const SIGNAL = ma.calculate(MACD);
+    const SIGNAL = ema.calculate(MACD);
     const HIST = this.difference(MACD, SIGNAL);
     return {MACD, SIGNAL, HIST};
   }
 
-  count(data) {
-    const calculation = this.calculate(data);
+  count(array) {
+    const calculation = this.calculate(array.slice(-this.longPeriod));
     return {
       MACD: calculation.MACD.pop(),
       SIGNAL: calculation.SIGNAL.pop(),
