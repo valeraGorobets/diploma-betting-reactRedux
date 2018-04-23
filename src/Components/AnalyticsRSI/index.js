@@ -24,11 +24,11 @@ class AnalyticsRSI extends Component {
         },
         fillAreaLow: {
           Date: props.Date,
-          Value: this.bottomLevel
+          Values: new Array(props.Date.length).fill(this.bottomLevel)
         },
         fillAreaHeight: {
           Date: props.Date,
-          Value: this.topLevel
+          Values: new Array(props.Date.length).fill(this.topLevel)
         }
       });
       rsi.simulate(props.Close, props.Date, true);

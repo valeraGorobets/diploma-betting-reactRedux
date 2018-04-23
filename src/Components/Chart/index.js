@@ -46,7 +46,7 @@ class Chart extends Component {
         }
         let config = {};
         if (attr.startsWith('candlestick')) {
-            const { Date, Open, Close, High, Low, Name } = nextProps[attr];
+            const { Name, Date, Open, Close, High, Low } = nextProps[attr];
             config = {
 	            name: Name,
 	            x: Date,
@@ -62,42 +62,49 @@ class Chart extends Component {
 	            yaxis: 'y'
           	}
         } else if (attr.startsWith('scatter')) {
-          const { Date, Values, Name } = nextProps[attr];
+          const { Name, Date, Values } = nextProps[attr];
           config = {
+            name: Name,
             x: Date,
             y: Values,
             type: 'scatter',
             mode: 'lines+points',
-            marker: { color: `${this.getNextColor()}` },
-            name: Name
+            marker: { color: `${this.getNextColor()}` }
           }
         } else if (attr.startsWith('bar')) {
-          const { Date, Values, Name } = nextProps[attr];
+          const { Name, Date, Values } = nextProps[attr];
           config = {
+            name: Name,
             x: Date,
             y: Values,
-            type: 'bar',
-            name: Name
+            type: 'bar'
           }
         } else if(attr.startsWith('fillAreaLow')){
-          const { Date, Value } = nextProps[attr];
+          const { Name,  Date, Values, showlegend } = nextProps[attr];
           config = {
+            name: Name,
             x: Date,
-            y: new Array(Date.length).fill(Value),
-            type: 'scatter',
-            showlegend: false,
-            hoverinfo: 'none'
+            y: Values,
+            type: 'scatter'
+          }
+          if(!showlegend){
+            config.showlegend = false;
+            config.hoverinfo = 'none';
           }
         }
         else if(attr.startsWith('fillAreaHeight')){
-          const { Date, Value } = nextProps[attr];
+          const { Name, Date, Values, showlegend } = nextProps[attr];
           config = {
+            name: Name,
             x: Date,
-            y: new Array(Date.length).fill(Value),
+            y: Values,
             fill: 'tonexty',
-            type: 'scatter',
-            showlegend: false,
-            hoverinfo: 'none'
+            fillcolor: 'rgba(147,112,219,0.3)',
+            type: 'scatter'
+          }
+          if(!showlegend){
+            config.showlegend = false;
+            config.hoverinfo = 'none';
           }
         }
         newDataArray.push(config);
