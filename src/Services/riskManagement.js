@@ -32,6 +32,7 @@ class RiskManagement {
       return true;
     }
     const res = (bollinger.upper - price)/(price - bollinger.lower);
+    // console.log(res)
     if((desiredPosition === posName.LONG && res>=this.allowedRisk)||
       (desiredPosition === posName.SHORT && Math.pow(res, -1)>=this.allowedRisk)){
       // console.log('in')

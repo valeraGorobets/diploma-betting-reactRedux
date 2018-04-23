@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 import Chart from '../Chart';
-import Analytics from '../AnalyticsBOLLINGER/';
+import Analytics from '../AnalyticsSTRATEGY/';
 
 export default class Main extends Component {
 
@@ -10,7 +10,7 @@ export default class Main extends Component {
     super(props);
     this.state = {
     }
-    this.StockDataService = new StockDataService(80);
+    this.StockDataService = new StockDataService(280);
     // this.StockDataService.requestStocksFromLocal('epam').then(response => {
     //   this.setState({
     //     Date: response.Date,
