@@ -2,7 +2,7 @@ import EMA from './EMA.js';
 import posName from './posName.js';
 
 class MACD {
-  constructor(shortPeriod, longPeriod, signalPeriod) {
+  constructor(shortPeriod = 12, longPeriod = 26, signalPeriod = 9) {
     this.shortPeriod = shortPeriod;
     this.longPeriod = longPeriod;
     this.signalPeriod = signalPeriod;
