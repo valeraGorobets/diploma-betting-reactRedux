@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "axios": "^0.18.0",
+    "bollinger-bands": "^3.0.1",
     "csvtojson": "^1.1.9",
     "plotly.js": "^1.35.2",
     "react": "^16.2.0",

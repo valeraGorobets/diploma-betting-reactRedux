@@ -8,14 +8,14 @@ class AnalyticsSTOCHASTIC extends Component {
       this.kPeriod = 14;
       this.dPeriod = 3;
       this.smooth = 3;
-      this.lowValue = 20;
-      this.heightValue = 80;
+      this.bottomLevel = 20;
+      this.topLevel = 80;
       this.state = {};
     }
 
     componentWillReceiveProps(nextProps) {
       const props = nextProps.companyData;
-      const stochastic = new STOCHASTIC(this.kPeriod, this.dPeriod, this.smooth, this.lowValue, this.heightValue);
+      const stochastic = new STOCHASTIC(this.kPeriod, this.dPeriod, this.smooth, this.bottomLevel, this.topLevel);
       const stochasticResults = stochastic.calculate(props.Close, props.High, props.Low);
       this.setState({
         data: props.data,
@@ -31,11 +31,11 @@ class AnalyticsSTOCHASTIC extends Component {
         },
         fillAreaLow: {
           Date: props.Date,
-          Value: this.lowValue
+          Values: new Array(props.Date.length).fill(this.bottomLevel)
         },
         fillAreaHeight: {
           Date: props.Date,
-          Value: this.heightValue
+          Values: new Array(props.Date.length).fill(this.topLevel)
         }
       });
       stochastic.simulate(props.Close, props.High, props.Low, props.Date, false);
