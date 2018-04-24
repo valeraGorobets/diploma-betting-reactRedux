@@ -3,6 +3,7 @@ import posName from './posName.js';
 class Position {
   constructor(type, date, priceOpened, bollingerBands) {
     this.status = 'OPENED';
+    this.notMoovedStop = true;
     this.type = type;
     this.dateCreation = date;
     this.priceOpened = priceOpened;
