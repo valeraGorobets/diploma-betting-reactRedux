@@ -18,15 +18,16 @@ class AnalyticsSTRATEGY extends Component {
       const bollingerResults = new BOLLINGER().calculate(props.Close);
 
       const riskManagement = new RiskManagement();
+      new Strategy(riskManagement, ma5, ma9).simulate(props);
       
       this.setState({
         data: props,
-        scatterMA5: {
+        scatterMA5:{
           Name: 'MA5',
           Date: props.Date,
           Values: ma5.calculate(props.Close)
         },
-        scatterMA9: {
+        scatterMA9:{
           Name: 'MA9',
           Date: props.Date,
           Values: ma9.calculate(props.Close)
@@ -44,7 +45,6 @@ class AnalyticsSTRATEGY extends Component {
           showlegend: true
         }
       });
-      new Strategy(riskManagement, ma5, ma9).simulate(props.Close, props.Date);
     }
 
     render() {

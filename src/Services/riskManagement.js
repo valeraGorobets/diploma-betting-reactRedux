@@ -2,7 +2,7 @@ import BOLLINGER from './BOLLINGER.js';
 import posName from './posName.js';
 
 class RiskManagement {
-  constructor(allowedRisk=2) {
+  constructor(allowedRisk = 2) {
     this.allowedRisk = allowedRisk;
   }
 
@@ -21,8 +21,8 @@ class RiskManagement {
   }
 
   isInvestmentPossible(prices, desiredPosition) {
-    const bollinger = new BOLLINGER().count(prices);
-    return this.countRiskOfInvestment(prices.pop(), desiredPosition, bollinger);
+    const bollinger = this.getBands(prices.slice());
+    return this.countRiskOfInvestment(prices[prices.length - 1], desiredPosition, bollinger);
   }
 
   countRiskOfInvestment(price, desiredPosition, bollinger) {
@@ -39,6 +39,10 @@ class RiskManagement {
       return true;
     }
     return false;
+  }
+
+  getBands(prices) {
+    return new BOLLINGER().count(prices);
   }
 
 }

@@ -34,7 +34,7 @@ class BOLLINGER {
   }
 
   calculate(array) {
-    return boll(array, 20, 2);
+    return boll(array, this.period, this.stDeviation);
   }
 
   count(array) {
