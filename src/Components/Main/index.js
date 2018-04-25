@@ -10,7 +10,7 @@ export default class Main extends Component {
     super(props);
     this.state = {
     }
-    this.StockDataService = new StockDataService(280);
+    this.StockDataService = new StockDataService(250);
     // this.StockDataService.requestStocksFromLocal('epam').then(response => {
     //   this.setState({
     //     Date: response.Date,

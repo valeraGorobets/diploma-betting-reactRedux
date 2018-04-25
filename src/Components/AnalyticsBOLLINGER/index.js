@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import BOLLINGER from '../../Services/BOLLINGER';
+import BOLLINGER from '../../Services/indicators/BOLLINGER';
+import RiskManagement from '../../Services/RiskManagement.js';
 import Chart from '../Chart';
-import riskManagement from '../../Services/riskManagement.js';
 
 class AnalyticsBOLLINGER extends Component {
     constructor(props) {
@@ -38,7 +38,7 @@ class AnalyticsBOLLINGER extends Component {
           showlegend: true
         }
       });
-      new riskManagement(2).simulate(props.Close, props.Date);
+      new RiskManagement(2).simulate(props.Close, props.Date);
       // bollinger.simulate(props.Close, props.High, props.Low, props.Date, false);
     }
 

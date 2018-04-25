@@ -1,17 +1,15 @@
-import boll from 'bollinger-bands';
-import posName from './posName.js';
+import {Type} from '../position/PositionConstants.js';
 
-class BOLLINGER {
-  constructor(period = 20, stDeviation = 2) {
+class MA {
+  constructor(period = 9) {
     this.period = period;
-    this.stDeviation = stDeviation;
   }
 
   simulate(array, dates, isPartOfStrategy) {
     for(let i = 30; i<=array.length; i++){
       let knownArray = array.slice(0, i);
       let si = this.shouldInvest(knownArray, isPartOfStrategy);
-      if(si !== posName.NONE){
+      if(si !== Type.NONE){
         console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
@@ -24,27 +22,30 @@ class BOLLINGER {
     const yesterdayMA = this.count(array.slice(-this.period-1, -1));
     if((yesterdayMA > yesterdayPrice && todayMA < todayPrice) ||
       (isPartOfStrategy && todayMA < todayPrice)) {
-      return posName.LONG;
+      return Type.LONG;
     } else if((yesterdayMA < yesterdayPrice && todayMA > todayPrice) || 
       (isPartOfStrategy && todayMA > todayPrice)) {
-      return posName.SHORT;
+      return Type.SHORT;
     } else {
-      return posName.NONE;
+      return Type.NONE;
     }
   }
 
   calculate(array) {
-    return boll(array, 20, 2);
+    const amountOnUndefindes = array.findIndex(el => Number(el));
+    array = array.filter(Number);
+    let result = new Array(amountOnUndefindes + this.period-1);
+    for(let i = this.period; i <= array.length; i++){
+      const d = array.slice(i-this.period, i);
+      const res = this.count(d);
+      result.push(res);
+    }
+    return result;
   }
 
   count(array) {
-    const calculation = this.calculate(array);
-    return {
-      upper: calculation.upper.pop(),
-      mid: calculation.mid.pop(),
-      lower: calculation.lower.pop()
-    }
+    return array.slice(-this.period).reduce((total, value) => total + value) / this.period;
   }
 }
 
-export default BOLLINGER;
+export default MA;

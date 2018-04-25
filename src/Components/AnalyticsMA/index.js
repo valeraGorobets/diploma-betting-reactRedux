@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import MA from '../../Services/MA.js';
+import MA from '../../Services/indicators/MA.js';
 import Chart from '../Chart';
 
 class AnalyticsMA extends Component {

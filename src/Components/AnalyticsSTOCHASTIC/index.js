@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import STOCHASTIC from '../../Services/STOCHASTIC.js';
+import STOCHASTIC from '../../Services/indicators/STOCHASTIC.js';
 import Chart from '../Chart';
 
 class AnalyticsSTOCHASTIC extends Component {

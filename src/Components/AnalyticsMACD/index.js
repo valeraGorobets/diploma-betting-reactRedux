@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import MACD from '../../Services/MACD.js';
+import MACD from '../../Services/indicators/MACD.js';
 import Chart from '../Chart';
 
 

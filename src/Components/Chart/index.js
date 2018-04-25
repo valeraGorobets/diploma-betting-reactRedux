@@ -22,8 +22,7 @@ class Chart extends Component {
               type: 'date'
           },
           yaxis: {
-              autorange: true,
-              type: 'linear'
+              fixedrange: false
           }
         }
       }
@@ -33,6 +32,9 @@ class Chart extends Component {
       let index = 0;
       const availableColors = [ 'blue','MediumVioletRed', 'LightSalmon', 'DarkMagenta',  'Chartreuse'];
       this.getNextColor = function () {
+        if(index === availableColors.length){
+          index = 0;
+        }
         return availableColors[index++];
       }
       return availableColors[index++];
@@ -59,7 +61,7 @@ class Chart extends Component {
 	            open: Open,
 	            type: 'candlestick',
 	            xaxis: 'x',
-	            yaxis: 'y'
+              yaxis: 'y'
           	}
         } else if (attr.startsWith('scatter')) {
           const { Name, Date, Values } = nextProps[attr];
@@ -117,7 +119,7 @@ class Chart extends Component {
 
     render() {
     	return ( 
-    		<Plot data = { this.state.data } layout = { this.state.layout }/>
+        <Plot data = { this.state.data } layout = { this.state.layout }/>
       )
     }
 }

@@ -1,5 +1,5 @@
 import MA from './MA.js';
-import posName from './posName.js';
+import {Type} from '../position/PositionConstants.js';
 
 class STOCHASTIC {
   constructor(kPeriod = 14, dPeriod = 3, smooth = 1, bottomLevel = 20, topLevel = 80) {
@@ -16,7 +16,7 @@ class STOCHASTIC {
       let knownHighPricesArray = highPricesArray.slice(0, i);
       let knownLowPricesArray = lowPricesArray.slice(0, i);
       let si = this.shouldInvest(knownArray, knownHighPricesArray, knownLowPricesArray, isPartOfStrategy);
-      if(si !== posName.NONE){
+      if(si !== Type.NONE){
         console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
@@ -30,12 +30,12 @@ class STOCHASTIC {
     const yesterdayStoch = this.count(array, highPricesArray, lowPricesArray);
     if((yesterdayStoch.K < this.bottomLevel && todayStoch.K > this.bottomLevel) || 
       (isPartOfStrategy && todayStoch.K > todayStoch.D)) {
-      return posName.LONG;
+      return Type.LONG;
     } else if((yesterdayStoch.K > this.topLevel && todayStoch.K < this.topLevel)|| 
       (isPartOfStrategy && todayStoch.K < todayStoch.D)) {
-      return posName.SHORT;
+      return Type.SHORT;
     } else {
-      return posName.NONE;
+      return Type.NONE;
     }
   }
 
