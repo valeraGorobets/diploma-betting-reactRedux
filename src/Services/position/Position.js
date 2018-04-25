@@ -1,13 +1,13 @@
-import posName from './posName.js';
+import {Type, Status} from './PositionConstants.js';
 
 class Position {
   constructor(type, date, priceOpened, bollingerBands) {
-    this.status = 'OPENED';
+    this.status = Status.OPENED;
     this.notMoovedStop = true;
     this.type = type;
     this.dateCreation = date;
     this.priceOpened = priceOpened;
-    if(type === posName.LONG){  
+    if(type === Type.LONG){  
       this.stopLoss = bollingerBands.lower;
       this.takeProfit = bollingerBands.upper;
     } else {  

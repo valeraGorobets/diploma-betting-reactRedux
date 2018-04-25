@@ -1,5 +1,5 @@
 import Position from './Position.js';
-import posName from './posName.js';
+import {Type, Status} from './PositionConstants.js';
 
 class PositionController {
   constructor() {
@@ -15,11 +15,11 @@ class PositionController {
   }
 
   checkForClosingPosition(todayMinPrice, todayMaxPrice, todayDate) {
-    this.positions.filter(position => position.status === 'OPENED')
+    this.positions.filter(position => position.status === Status.OPENED)
       .forEach(position => {
-        if((position.type === posName.LONG &&  position.stopLoss >= todayMinPrice) || 
-          (position.type === posName.SHORT && position.stopLoss <= todayMaxPrice)) {
-            position.status = 'CLOSED';
+        if((position.type === Type.LONG &&  position.stopLoss >= todayMinPrice) || 
+          (position.type === Type.SHORT && position.stopLoss <= todayMaxPrice)) {
+            position.status = Status.CLOSED;
             position.dateClosing = todayDate;
             position.profit = position.stopLoss - position.priceOpened;
         }
@@ -28,7 +28,7 @@ class PositionController {
 
   trailStopLoss(i, currentPrice, yesterdayPrice) {
     const deltaPrice = currentPrice - yesterdayPrice;
-    this.positions.filter(position => position.status === 'OPENED')
+    this.positions.filter(position => position.status === Status.OPENED)
       .forEach(position => {
         if(position.notMoovedStop){
           let ss = new Array(i-1);
@@ -36,8 +36,8 @@ class PositionController {
           this.trail[position.dateCreation] = ss;
         }
          
-        if((position.type === posName.LONG && deltaPrice > 0) || 
-          (position.type === posName.SHORT && deltaPrice < 0)) {
+        if((position.type === Type.LONG && deltaPrice > 0) || 
+          (position.type === Type.SHORT && deltaPrice < 0)) {
           position.stopLoss += deltaPrice;
         }
         if(position.notMoovedStop) {

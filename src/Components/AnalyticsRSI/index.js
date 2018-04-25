@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import RSI from '../../Services/RSI.js';
+import RSI from '../../Services/indicators/RSI.js';
 import Chart from '../Chart';
 
 

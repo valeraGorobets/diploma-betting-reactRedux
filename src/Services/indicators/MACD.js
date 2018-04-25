@@ -1,5 +1,5 @@
 import EMA from './EMA.js';
-import posName from './posName.js';
+import {Type} from '../position/PositionConstants.js';
 
 class MACD {
   constructor(shortPeriod = 12, longPeriod = 26, signalPeriod = 9) {
@@ -12,7 +12,7 @@ class MACD {
     for(let i = 30; i<=array.length; i++){
       let knownArray = array.slice(0, i);
       let si = this.shouldInvest(knownArray, isPartOfStrategy);
-      if(si !== posName.NONE){
+      if(si !== Type.NONE){
         console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
@@ -23,12 +23,12 @@ class MACD {
     const yesterday = this.count(array.slice(-this.longPeriod-1, -1));
     if((today.MACD < 0 && yesterday.HIST < 0 && today.HIST > 0) || 
       (isPartOfStrategy && today.HIST > 0)) {
-      return posName.LONG;
+      return Type.LONG;
     } else if((today.MACD > 0 && yesterday.HIST > 0 && today.HIST < 0) ||
       (isPartOfStrategy && today.HIST < 0)) {
-      return posName.SHORT;
+      return Type.SHORT;
     } else {
-      return posName.NONE;
+      return Type.NONE;
     }
   }
 

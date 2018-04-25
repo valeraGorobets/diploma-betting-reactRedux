@@ -1,5 +1,5 @@
-import posName from './posName.js';
-import PositionController from './PositionController.js';
+import PositionController from './position/PositionController.js';
+import {Type} from './position/PositionConstants.js';
 
 class STRATEGY {
   constructor(riskManagement, ...strategies) {
@@ -27,8 +27,8 @@ class STRATEGY {
       let shoulInvestArray = this.strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy))
         .filter((value, index, self) => self.indexOf(value) === index);
 
-      let shoulInvestResult = shoulInvestArray.length === 1 ? shoulInvestArray[0] : posName.NONE;
-      if(shoulInvestResult !== posName.NONE){
+      let shoulInvestResult = shoulInvestArray.length === 1 ? shoulInvestArray[0] : Type.NONE;
+      if(shoulInvestResult !== Type.NONE){
         if(this.riskManagement.isInvestmentPossible(knownClose, shoulInvestResult)){
           const bollingerBands = this.riskManagement.getBands(Close.slice(0, i));
           this.positionController.openPosition(shoulInvestResult, Date[i], todayOpenPrice, bollingerBands);

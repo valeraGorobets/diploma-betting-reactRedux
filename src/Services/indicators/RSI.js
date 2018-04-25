@@ -1,4 +1,5 @@
-import posName from './posName.js';
+import {Type} from '../position/PositionConstants.js';
+
 class RSI {
   constructor(period = 14, bottomLevel = 20, topLevel = 80) {
     this.period = period;
@@ -10,7 +11,7 @@ class RSI {
     for(let i = 30; i<=array.length; i++){
       let knownArray = array.slice(0, i);
       let si = this.shouldInvest(knownArray, isPartOfStrategy);
-      if(si !== posName.NONE){
+      if(si !== Type.NONE){
         console.log(`Date: ${dates.slice(0, i).pop()}; Should Invest: ${si}`)
       }
     }
@@ -21,12 +22,12 @@ class RSI {
     const yesterdayRSI = this.count(array.slice(0, array.length - 1));
     if((yesterdayRSI < this.bottomLevel && todayRSI > this.bottomLevel) || 
       (isPartOfStrategy && todayRSI < this.bottomLevel)) {
-      return posName.LONG;
+      return Type.LONG;
     } else if((yesterdayRSI > this.topLevel && todayRSI < this.topLevel)|| 
       (isPartOfStrategy && todayRSI > this.topLevel)) {
-      return posName.SHORT;
+      return Type.SHORT;
     } else {
-      return posName.NONE;
+      return Type.NONE;
     }
   }
 

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import MA from '../../Services/MA';
-import BOLLINGER from '../../Services/BOLLINGER';
-import RiskManagement from '../../Services/riskManagement';
-import Chart from '../Chart';
+import MA from '../../Services/indicators/MA';
+import BOLLINGER from '../../Services/indicators/BOLLINGER';
+import RiskManagement from '../../Services/RiskManagement';
 import Strategy from '../../Services/Strategy.js';
+import Chart from '../Chart';
 
 class AnalyticsSTRATEGY extends Component {
     constructor(props) {
