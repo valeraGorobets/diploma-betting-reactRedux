@@ -1,5 +1,5 @@
 import PositionController from './position/PositionController.js';
-import {Type} from './position/PositionConstants.js';
+import {Type, Status} from './position/PositionConstants.js';
 
 class STRATEGY {
   constructor(riskManagement, ...strategies) {
@@ -35,11 +35,44 @@ class STRATEGY {
         }
       }
     }
-    // console.log(this.positionController.positions);
+    const positions = this.positionController.positions;
+    console.log(positions);
+    const simleView = this.simleView(positions);
+    console.log(simleView)
+    const analyze = this.analyze(positions);
+    console.log(analyze)
+
     this.trail = this.positionController.trail;
     // console.log(this.positionController.trail);
   }
 
+  simleView(positions) {
+    return positions.filter(position => position.status === Status.CLOSED)
+      .map(position => {
+        return {
+          type: position.type,
+          profitInPercent: position.profitInPercent,
+          days: this.daysBetween(position.dateCreation, position.dateClosing)
+        };
+      });
+  }
+
+  analyze(positions) {
+    return positions.filter(position => position.status === Status.CLOSED)
+      .reduce((totalProfit, position) => {
+        if(position.type === Type.LONG) {
+          return totalProfit + position.profitInPercent;
+        } else {
+          return totalProfit - position.profitInPercent;
+        }
+      }, 0);
+  }
+
+  daysBetween(date1, date2) {
+    const mlsc = new Date(date2) - new Date(date1);
+    return mlsc/1000/60/60/24;
+
+  }
 }
 
 export default STRATEGY;

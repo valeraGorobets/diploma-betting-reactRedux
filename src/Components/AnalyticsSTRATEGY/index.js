@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import MA from '../../Services/indicators/MA';
+import MACD from '../../Services/indicators/MACD';
 import BOLLINGER from '../../Services/indicators/BOLLINGER';
 import RiskManagement from '../../Services/RiskManagement';
 import Strategy from '../../Services/Strategy.js';
@@ -14,63 +15,34 @@ class AnalyticsSTRATEGY extends Component {
     componentWillReceiveProps(nextProps) {
       const props = nextProps.companyData;
       const ma5 = new MA(5);
-      const ma9 = new MA(9);
+      const macd = new MACD(12, 26, 9);
       const bollingerResults = new BOLLINGER().calculate(props.Close);
 
-      const riskManagement = new RiskManagement();
-      const strategy = new Strategy(riskManagement, ma5, ma9)
+      const riskManagement = new RiskManagement(1);
+      const strategy = new Strategy(riskManagement, ma5, macd);
       strategy.simulate(props);
+
       this.setState({
         data: props,
         scatterMA5:{
-          Name: 'MA5',
+          Name: 'ma5',
           Date: props.Date,
           Values: ma5.calculate(props.Close)
         },
-        scatterMA9:{
-          Name: 'MA9',
+        scatterMACD:{
+          Name: 'macd',
           Date: props.Date,
-          Values: ma9.calculate(props.Close)
+          Values: macd.calculate(props.Close).MACD
         },
-        scatterTRAIL1:{
-          Name: 'TRAIL',
+        scatterSIGNAL:{
+          Name: 'SIGNAL',
           Date: props.Date,
-          Values: strategy.trail['2017-11-13']
+          Values: macd.calculate(props.Close).SIGNAL
         },
-        scatterTRAIL2:{
-          Name: 'TRAIL',
+        barHIST:{
+          Name: 'HIST',
           Date: props.Date,
-          Values: strategy.trail['2017-11-14']
-        },
-        scatterTRAIL3:{
-          Name: 'TRAIL',
-          Date: props.Date,
-          Values: strategy.trail['2017-11-15']
-        },
-        scatterTRAIL4:{
-          Name: 'TRAIL',
-          Date: props.Date,
-          Values: strategy.trail['2017-12-27']
-        },
-        scatterTRAIL5:{
-          Name: 'TRAIL',
-          Date: props.Date,
-          Values: strategy.trail['2018-02-02']
-        },
-        scatterTRAIL6:{
-          Name: 'TRAIL',
-          Date: props.Date,
-          Values: strategy.trail['2018-02-15']
-        },
-        scatterTRAIL7:{
-          Name: 'TRAIL',
-          Date: props.Date,
-          Values: strategy.trail['2018-04-05']
-        },
-        scatterTRAIL8:{
-          Name: 'TRAIL',
-          Date: props.Date,
-          Values: strategy.trail['2018-04-06']
+          Values: macd.calculate(props.Close).HIST
         },
         scatterBOLLINGERTop: {
           Name: 'B_Upper',
@@ -93,17 +65,13 @@ class AnalyticsSTRATEGY extends Component {
           <Chart name='AnalyticsSTRATEGY' 
             candlestick={this.state.data}
             scatterMA5={this.state.scatterMA5}
-            scatterMA9={this.state.scatterMA9}
-            scatterTRAIL1={this.state.scatterTRAIL1}
-            scatterTRAIL2={this.state.scatterTRAIL2}
-            scatterTRAIL3={this.state.scatterTRAIL3}
-            scatterTRAIL4={this.state.scatterTRAIL4}
-            scatterTRAIL5={this.state.scatterTRAIL5}
-            scatterTRAIL6={this.state.scatterTRAIL6}
-            scatterTRAIL7={this.state.scatterTRAIL7}
-            scatterTRAIL8={this.state.scatterTRAIL8}
             fillAreaLow={this.state.scatterBOLLINGERBottom}
             fillAreaHeight={this.state.scatterBOLLINGERTop}
+          />
+          <Chart name='AnalyticsSTRATEGY' 
+            scatterMACD={this.state.scatterMACD}
+            scatterSIGNAL={this.state.scatterSIGNAL}
+            barHIST={this.state.barHIST}
           />
         </div>
       )
