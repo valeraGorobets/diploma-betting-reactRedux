@@ -21,7 +21,8 @@ class PositionController {
           (position.type === Type.SHORT && position.stopLoss <= todayMaxPrice)) {
             position.status = Status.CLOSED;
             position.dateClosing = todayDate;
-            position.profit = position.stopLoss - position.priceOpened;
+            position.profitInMoney = position.stopLoss - position.priceOpened;
+            position.profitInPercent = 100 * position.profitInMoney / position.priceOpened;
         }
       })
   }

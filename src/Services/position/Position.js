@@ -7,6 +7,8 @@ class Position {
     this.type = type;
     this.dateCreation = date;
     this.priceOpened = priceOpened;
+    this.profitInMoney = 0;
+    this.profitInPercent = 0;
     if(type === Type.LONG){  
       this.stopLoss = bollingerBands.lower;
       this.takeProfit = bollingerBands.upper;
