@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import './styles.css';
 import StockDataService from './../../Services/StockDataService';
 import Chart from '../Chart';
 import Analytics from '../AnalyticsSTRATEGY/';
+import {initApp} from '../../Actions/index.js';
 
-export default class Main extends Component {
+class Main extends Component {
 
   constructor(props) {
     super(props);
@@ -22,6 +24,10 @@ export default class Main extends Component {
         }
       });
     });
+
+    props.dispatch(initApp({
+      obj: 'hello'
+    }))
   }
 
   render() {
@@ -33,3 +39,11 @@ export default class Main extends Component {
     );
   }
 }
+
+const mapStateToProps = store => {
+  return {
+    obj: store.obj
+  }
+}
+
+export default connect(mapStateToProps)(Main)

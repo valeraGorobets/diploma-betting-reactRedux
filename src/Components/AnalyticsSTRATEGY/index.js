@@ -1,17 +1,21 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import MA from '../../Services/indicators/MA';
 import BOLLINGER from '../../Services/indicators/BOLLINGER';
 import RiskManagement from '../../Services/RiskManagement';
 import Strategy from '../../Services/Strategy.js';
 import Chart from '../Chart';
+import store from '../../Store/configureStore.js';
 
 class AnalyticsSTRATEGY extends Component {
     constructor(props) {
       super(props);
       this.state = {};
+      store.subscribe(() => console.log(store.getState()))
     }
 
     componentWillReceiveProps(nextProps) {
+      console.log(store.getState());
       const props = nextProps.companyData;
       const ma5 = new MA(5);
       const bollingerResults = new BOLLINGER().calculate(props.Close);
@@ -61,5 +65,11 @@ class AnalyticsSTRATEGY extends Component {
       )
     }
 }
+const mapStateToProps = store => {
+  return {
+    obj: store.obj
+  }
+}
 
-export default AnalyticsSTRATEGY;
+
+export default connect(mapStateToProps)(AnalyticsSTRATEGY)
