@@ -8,31 +8,9 @@ export default class Main extends Component {
 
   constructor(props) {
     super(props);
-    this.state = {
-    }
-    this.StockDataService = new StockDataService(250);
-    // this.StockDataService.requestStocksFromLocal('epam').then(response => {
-    //   this.setState({
-    //     Date: response.Date,
-    //     epamCompanyData: response,
-    //     epamScatter: {
-    //       Name: 'Close',
-    //       Date: response.Date,
-    //       Values: response.Close
-    //     }
-    //   })
-    // });
-    // this.StockDataService.requestStocksFromLocal('apple').then(response => {
-    //   this.setState({
-    //     Date: response.Date,
-    //     appleCompanyData: response,
-    //     appleScatter: {
-    //       Name: 'Close',
-    //       Date: response.Date,
-    //       Values: response.Close
-    //     }
-    //   })
-    // });
+    this.state = {}
+    this.StockDataService = new StockDataService(350);
+
     this.StockDataService.requestStocksFromLocal('google').then(response => {
       this.setState({
         Date: response.Date,

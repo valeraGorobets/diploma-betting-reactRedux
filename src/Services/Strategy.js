@@ -1,45 +1,97 @@
 import PositionController from './position/PositionController.js';
-import {Type} from './position/PositionConstants.js';
+import {Type, Status} from './position/PositionConstants.js';
+import MoneyManager from './MoneyManager.js';
 
 class STRATEGY {
   constructor(riskManagement, ...strategies) {
     this.riskManagement = riskManagement;
     this.strategies = strategies;
-    this.positionController = new PositionController();
-    this.trail = {};
+    this.moneyManager = new MoneyManager(1000, 0.93);
+    this.positionController = new PositionController(this.moneyManager);
   }
 
   simulate(props) {
     const {Date, Open, Close, High, Low} = props;
-
     const isPartOfStrategy = this.strategies.length === 1 ? false : true;
-    for(let i = 30; i<=Close.length; i++){
+    
+    for(let i = 30; i <= Close.length; i++) {
+      
       //evening;
       let knownClose = Close.slice(0, i);
       let knownLow = Low.slice(0, i);
       let knownHigh = High.slice(0, i);
       let knownDate = Date.slice(0, i);
-      this.positionController.checkForClosingPosition(knownLow[knownLow.length - 1], knownHigh[knownHigh.length - 1], knownDate[knownDate.length - 1]);
-      this.positionController.trailStopLoss(i, knownClose[knownClose.length - 1], knownClose[knownClose.length - 2]);
+      this.positionController.checkForClosingPosition(this.dataXdaysBefore(knownDate), this.dataXdaysBefore(knownLow), this.dataXdaysBefore(knownHigh));
+      this.positionController.trailStopLoss(i, knownClose, this.dataXdaysBefore(knownLow), this.dataXdaysBefore(knownHigh), this.dataXdaysBefore(knownLow, 1),this.dataXdaysBefore(knownHigh, 1));
       
       //morining
       let todayOpenPrice = Open[i];
       let shoulInvestArray = this.strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy))
         .filter((value, index, self) => self.indexOf(value) === index);
 
-      let shoulInvestResult = shoulInvestArray.length === 1 ? shoulInvestArray[0] : Type.NONE;
-      if(shoulInvestResult !== Type.NONE){
-        if(this.riskManagement.isInvestmentPossible(knownClose, shoulInvestResult)){
-          const bollingerBands = this.riskManagement.getBands(Close.slice(0, i));
-          this.positionController.openPosition(shoulInvestResult, Date[i], todayOpenPrice, bollingerBands);
-        }
+      let positionType = shoulInvestArray.length === 1 ? shoulInvestArray[0] : Type.NONE;
+      if(positionType !== Type.NONE && this.riskManagement.isInvestmentPossible(knownClose, positionType)){
+        const bollingerBands = this.riskManagement.getBands(Close.slice(0, i));
+        this.positionController.openPosition(positionType, Date[i], todayOpenPrice, bollingerBands);
       }
     }
-    // console.log(this.positionController.positions);
-    this.trail = this.positionController.trail;
-    // console.log(this.positionController.trail);
+
+    this.positionController.closeAllPositions(Date.slice().pop());
+    this.getReport();
   }
 
+  getReport() {
+    const positions = this.positionController.positions;
+    this.print(positions, 'positions');
+    
+    const simleView = this.simleView(positions);
+    this.print(simleView, 'simleView');
+    
+    const profitMoreThanNull = this.profitMoreThanNull(positions);
+    this.print(profitMoreThanNull, 'profitMoreThanNull');
+
+    const currentBank = this.moneyManager.currentBank;
+    this.print(currentBank, 'currentBank');
+
+    const trail = this.positionController.trail;
+    this.print(trail, 'trail');
+  }
+
+  print(what, description = '') {
+    console.log(`----------`);
+    console.log(description)
+    console.log(what);
+  }
+
+  dataXdaysBefore(array, days = 0) {
+    return array[array.length - 1 - days];
+  }
+
+  simleView(positions) {
+    return positions.filter(position => position.status === Status.CLOSED)
+      .map(position => {
+        return {
+          type: position.type,
+          profitInPercent: position.profitInPercent,
+          days: this.daysBetween(position.dateCreation, position.dateClosing)
+        };
+      });
+  }
+
+  daysBetween(date1, date2) {
+    const mlsc = new Date(date2) - new Date(date1);
+    return mlsc/1000/60/60/24;
+  }
+
+  profitMoreThanNull(positions) {
+    return positions.filter(position => position.status === Status.CLOSED)
+      .reduce((totalProfit, position) => {
+        if(position.profitInPercent >= 0) {
+          return totalProfit + 1;
+        }
+        return totalProfit
+      }, 0) * 100 / positions.length;
+  }
 }
 
 export default STRATEGY;
