@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import MA from '../../Services/indicators/MA';
-import MACD from '../../Services/indicators/MACD';
 import BOLLINGER from '../../Services/indicators/BOLLINGER';
 import RiskManagement from '../../Services/RiskManagement';
 import Strategy from '../../Services/Strategy.js';
@@ -15,11 +14,10 @@ class AnalyticsSTRATEGY extends Component {
     componentWillReceiveProps(nextProps) {
       const props = nextProps.companyData;
       const ma5 = new MA(5);
-      const macd = new MACD(12, 26, 9);
       const bollingerResults = new BOLLINGER().calculate(props.Close);
 
-      const riskManagement = new RiskManagement(1);
-      const strategy = new Strategy(riskManagement, ma5, macd);
+      const riskManagement = new RiskManagement();
+      const strategy = new Strategy(riskManagement, ma5);
       strategy.simulate(props);
 
       this.setState({
@@ -29,20 +27,10 @@ class AnalyticsSTRATEGY extends Component {
           Date: props.Date,
           Values: ma5.calculate(props.Close)
         },
-        scatterMACD:{
-          Name: 'macd',
+        scattertrail:{
+          Name: 'trail',
           Date: props.Date,
-          Values: macd.calculate(props.Close).MACD
-        },
-        scatterSIGNAL:{
-          Name: 'SIGNAL',
-          Date: props.Date,
-          Values: macd.calculate(props.Close).SIGNAL
-        },
-        barHIST:{
-          Name: 'HIST',
-          Date: props.Date,
-          Values: macd.calculate(props.Close).HIST
+          Values: strategy.positionController.trail['2018-04-04']
         },
         scatterBOLLINGERTop: {
           Name: 'B_Upper',
@@ -65,13 +53,9 @@ class AnalyticsSTRATEGY extends Component {
           <Chart name='AnalyticsSTRATEGY' 
             candlestick={this.state.data}
             scatterMA5={this.state.scatterMA5}
+            scattertrail={this.state.scattertrail}
             fillAreaLow={this.state.scatterBOLLINGERBottom}
             fillAreaHeight={this.state.scatterBOLLINGERTop}
-          />
-          <Chart name='AnalyticsSTRATEGY' 
-            scatterMACD={this.state.scatterMACD}
-            scatterSIGNAL={this.state.scatterSIGNAL}
-            barHIST={this.state.barHIST}
           />
         </div>
       )
