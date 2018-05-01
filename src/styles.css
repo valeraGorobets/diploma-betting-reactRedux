@@ -1,8 +1,9 @@
 body, html {
 	height: 100%;
 	margin: 0;
-	background: #fefefe;
+	background: #e2e1e0;
 	font-family: RobotoDraft, 'Helvetica Neue', Helvetica, Arial;
+	box-sizing: initial;
 }
 
 .content {
