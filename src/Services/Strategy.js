@@ -106,17 +106,17 @@ class STRATEGY {
     this.print(positions, 'positions');
     
     const simleView = this.simleView(positions);
-    // this.print(simleView, 'simleView');
+    this.print(simleView, 'simleView');
     
     const profitMoreThanNull = this.profitMoreThanNull(positions) || 0;
     this.probability = profitMoreThanNull;
-    // this.print(profitMoreThanNull, 'profitMoreThanNull');
+    this.print(profitMoreThanNull, 'profitMoreThanNull');
 
     const currentBank = this.moneyManager.currentBank;
-    // this.print(currentBank, 'currentBank');
+    this.print(currentBank, 'currentBank');
 
     const trail = this.positionController.trail;
-    // this.print(trail, 'trail');
+    this.print(trail, 'trail');
     store.dispatch(configApp({
       currentBank,
       positionsReport: {
