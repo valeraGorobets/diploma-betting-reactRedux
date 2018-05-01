@@ -1,7 +1,7 @@
 import {Type} from '../position/PositionConstants.js';
 
 class RSI {
-  constructor(period = 14, bottomLevel = 20, topLevel = 80) {
+  constructor(period = 14, bottomLevel = 30, topLevel = 70) {
     this.period = period;
     this.bottomLevel = bottomLevel;
     this.topLevel = topLevel;

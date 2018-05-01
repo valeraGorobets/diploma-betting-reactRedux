@@ -1,8 +1,4 @@
-let nextId = 0
-export const someAction = obj => {
-  return {
-    type: 'SOME_ACTION',
-    id: nextId++,
-    obj
-  }
-}
+export const initApp = obj => ({
+  type: 'INIT_APP',
+  config: obj
+})
