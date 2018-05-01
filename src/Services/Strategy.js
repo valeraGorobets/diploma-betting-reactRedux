@@ -7,17 +7,61 @@ import { configApp} from '../Actions/index.js';
 class STRATEGY {
   constructor(riskManagement, MoneyManagerParams, strategies) {
     this.riskManagement = riskManagement;
+    this.MoneyManagerParams = MoneyManagerParams;
     this.strategies = strategies;
-    this.moneyManager = new MoneyManager(MoneyManagerParams.startBank, MoneyManagerParams.propability, MoneyManagerParams.kellyFraction);
+    this.probability = 0;
+    this.savedPositionsFromLearning = [];
+    this.moneyManager = new MoneyManager(MoneyManagerParams.startBank, MoneyManagerParams.probability, MoneyManagerParams.kellyFraction);
     this.positionController = new PositionController(this.moneyManager);
   }
 
   simulate(props) {
+    const learningPart = this.getThird(props);
+    this.invest(learningPart);
+
+    this.moneyManager = new MoneyManager(this.MoneyManagerParams.startBank, this.probability, this.MoneyManagerParams.kellyFraction);
+    this.positionController = new PositionController(this.moneyManager);
+
+    const investmentPart = this.getRest(props);
+    this.invest(investmentPart, true);
+  }
+
+  getThird(props) {
+    let newObj = {};
+    const length = props.Close.length;
+    for (const key in props) {
+      if(key === 'Name') {
+        newObj['Name'] = props['Name'];
+      } else {
+        newObj[key] = props[key].slice(0, length/3);
+      }
+    }
+    return newObj;
+  }
+
+  getRest(props) {
+    let newObj = {};
+    const length = props.Close.length;
+    for (const key in props) {
+      if(key === 'Name') {
+        newObj['Name'] = props['Name'];
+      } else {
+        newObj[key] = props[key].slice(length/3);
+      }
+    }
+    return newObj;
+  }
+
+  invest(props, investMode) {
     const {Date, Open, Close, High, Low} = props;
     const isPartOfStrategy = this.strategies.length === 1 ? false : true;
-    
-    for(let i = 30; i <= Close.length; i++) {
+
+    for(let i = 30; i < Close.length; i++) {
       
+      if(i % 30 === 0 && investMode) {
+        const positions = this.savedPositionsFromLearning.concat(this.positionController.positions);
+        this.moneyManager.setProbability(this.profitMoreThanNull(positions));
+      }
       //evening;
       let knownClose = Close.slice(0, i);
       let knownLow = Low.slice(0, i);
@@ -41,9 +85,11 @@ class STRATEGY {
       //morining
       let todayOpenPrice = Open[i];
       let shoulInvestArray = this.strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy, knownHigh, knownLow))
-        .filter((value, index, self) => self.indexOf(value) === index);
+
+        shoulInvestArray = shoulInvestArray.filter((value, index, self) => self.indexOf(value) === index);
 
       let positionType = shoulInvestArray.length === 1 ? shoulInvestArray[0] : Type.NONE;
+      if( Date[i] === '2017-03-22'){debugger;}
       if(positionType !== Type.NONE && this.riskManagement.isInvestmentPossible(knownClose, positionType)){
         const bollingerBands = this.riskManagement.getBands(Close.slice(0, i));
         this.positionController.openPosition(positionType, Date[i], todayOpenPrice, bollingerBands);
@@ -56,19 +102,21 @@ class STRATEGY {
 
   getReport() {
     const positions = this.positionController.positions;
+    this.savedPositionsFromLearning = positions;
     this.print(positions, 'positions');
     
     const simleView = this.simleView(positions);
-    this.print(simleView, 'simleView');
+    // this.print(simleView, 'simleView');
     
-    const profitMoreThanNull = this.profitMoreThanNull(positions);
-    this.print(profitMoreThanNull, 'profitMoreThanNull');
+    const profitMoreThanNull = this.profitMoreThanNull(positions) || 0;
+    this.probability = profitMoreThanNull;
+    // this.print(profitMoreThanNull, 'profitMoreThanNull');
 
     const currentBank = this.moneyManager.currentBank;
-    this.print(currentBank, 'currentBank');
+    // this.print(currentBank, 'currentBank');
 
     const trail = this.positionController.trail;
-    this.print(trail, 'trail');
+    // this.print(trail, 'trail');
     store.dispatch(configApp({
       currentBank,
       positionsReport: {
