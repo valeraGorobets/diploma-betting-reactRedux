@@ -7,7 +7,8 @@ class Chart extends Component {
       this.state = {
         data: [],
         layout: {
-          height: 500,
+          width: 1300,
+          height: 600,
           dragmode: 'zoom',
           margin: {
               r: 10,
@@ -41,11 +42,13 @@ class Chart extends Component {
 
     componentWillReceiveProps(nextProps) {
       let newDataArray = [];
+      let customLayout = {};
       for (const attr in nextProps) {
         if (!nextProps[attr]) {
             return;
         }
         let config = {};
+        customLayout['title'] = nextProps.name;
         if (attr.startsWith('candlestick')) {
             const { Name, Date, Open, Close, High, Low } = nextProps[attr];
             config = {
@@ -80,6 +83,22 @@ class Chart extends Component {
             y: Values,
             type: 'bar'
           }
+        } else if (attr.startsWith('pie')) {
+          const { Name, Labels,  Values } = nextProps[attr];
+          config = {
+            name: Name,
+            labels: Labels,
+            values: Values,
+            type: 'pie',
+            marker: {
+              colors: ['#1DE9B6', '#CDDC39', '#FF7043']
+            }
+          }
+          customLayout = {
+            height: 350,
+            width: 450,
+            showlegend: true
+          }
         } else if(attr.startsWith('fillAreaLow')){
           const { Name,  Date, Values, showlegend } = nextProps[attr];
           config = {
@@ -110,15 +129,21 @@ class Chart extends Component {
         }
         newDataArray.push(config);
       }
+
       this.setState({
         data: newDataArray,
-        layout: Object.assign(this.state.layout, {title: nextProps.name})
+        layout: Object.assign(this.state.layout, customLayout)
       });
+      customLayout = {}
     }
 
     render() {
-    	return ( 
-        <Plot data={this.state.data} layout={this.state.layout}/>
+      return (
+        <div>
+          {(this.state.data.length && (
+            <Plot data={this.state.data} layout={this.state.layout}/>
+          )) || (<h2>No Data</h2>)}
+        </div>
       )
     }
 }

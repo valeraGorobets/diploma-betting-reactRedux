@@ -9,13 +9,17 @@ import store from '../../Store/configureStore.js';
 class AnalyticsSTRATEGY extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    store.subscribe(() => this.run(store.getState()))
+    this.state = {
+      savedState: {
+        Strategies: []
+      }
+    };
+    store.subscribe(() => this.run(store.getState()));
     this.run();
   }
 
   run(state) {
-    if(!state){
+    if(!state || this.sameState(state)){
       return;
     }
     const {companyData, BOLLINGERParams, AllowedRisk, MoneyManagerParams, Strategies} = state;
@@ -27,11 +31,6 @@ class AnalyticsSTRATEGY extends Component {
 
     this.setState({
       data: companyData,
-      scattertrail:{
-        Name: 'trail',
-        Date: companyData.Date,
-        Values: strategy.positionController.trail['2017-12-06']
-      },
       scatterBOLLINGERTop: {
         Name: 'B_Upper',
         Date: companyData.Date,
@@ -47,12 +46,27 @@ class AnalyticsSTRATEGY extends Component {
     });
   }
 
+  sameState(newState) {
+    if(this.state.savedState.companyName === newState.companyName &&
+      this.equalArrays(this.state.savedState.Strategies, newState.Strategies)){
+      return true;
+    } else {
+      this.setState({
+        savedState: Object.assign({}, newState)
+      });
+    }
+    return false;
+  }
+
+  equalArrays(array1, array2) {
+    return array1.length === array2.length && array1.every((v,i)=> v === array2[i])
+  }
+
   render() {
     return ( 
      <div>
         <Chart name='AnalyticsSTRATEGY' 
           candlestick={this.state.data}
-          scattertrail={this.state.scattertrail}
           fillAreaLow={this.state.scatterBOLLINGERBottom}
           fillAreaHeight={this.state.scatterBOLLINGERTop}
         />
