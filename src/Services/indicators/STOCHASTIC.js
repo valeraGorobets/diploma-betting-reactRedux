@@ -24,9 +24,9 @@ class STOCHASTIC {
 
   shouldInvest(array, isPartOfStrategy, highPricesArray, lowPricesArray) {
     const todayStoch = this.count(array, highPricesArray, lowPricesArray);
-    array.pop();
-    highPricesArray.pop();
-    lowPricesArray.pop();
+    array = array.slice(0, array.length-1);
+    highPricesArray = highPricesArray.slice(0, highPricesArray.length-1);
+    lowPricesArray = lowPricesArray.slice(0, lowPricesArray.length-1);
     const yesterdayStoch = this.count(array, highPricesArray, lowPricesArray);
     if((yesterdayStoch.K < this.bottomLevel && todayStoch.K > this.bottomLevel) || 
       (isPartOfStrategy && todayStoch.K > todayStoch.D)) {

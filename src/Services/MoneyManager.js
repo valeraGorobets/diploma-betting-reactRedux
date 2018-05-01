@@ -1,12 +1,20 @@
 import {Type} from './position/PositionConstants.js';
 
 export default class MoneyManager {
-  constructor(startBank = 1000, propability = 0.5, kellyFraction = 1) {
+  constructor(startBank = 1000, probability = 0.5, kellyFraction = 1) {
     this.startBank = startBank;
     this.currentBank = startBank;
     this.moneyFromShort = 0;
-    this.propability = propability;
+    this.probability = this.transformProbability(probability);
     this.kellyFraction = kellyFraction;
+  }
+
+  transformProbability(probability) {
+    return probability > 1 ? probability / 100 : probability;
+  }
+
+  setProbability(probability) {
+    this.probability = this.transformProbability(probability);
   }
 
   openPosition(position) {
@@ -52,6 +60,6 @@ export default class MoneyManager {
   }
 
   kellyBet(b) {
-    return ((this.propability * (b + 1) - 1) / b) / this.kellyFraction;
+    return ((this.probability * (b + 1) - 1) / b) / this.kellyFraction;
   }
 }

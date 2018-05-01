@@ -15,7 +15,7 @@
 
 .reportSide {
   width: 25%;
-  /*height: 200px;*/
+  max-height: 700px;
 }
 
 .analyticsSide {

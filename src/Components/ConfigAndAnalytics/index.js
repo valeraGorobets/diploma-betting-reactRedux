@@ -16,7 +16,7 @@ import './styles.css';
 const indicators = {
   'MA(5)': new MA(5),
   'MA(9)': new MA(9),
-  'MA(14)': new MA(14),
+  'MA(21)': new MA(21),
   'RSI': new RSI(14),
   'MACD': new MACD(12, 26, 9),
   'STOCHASTIC': new STOCHASTIC(14)

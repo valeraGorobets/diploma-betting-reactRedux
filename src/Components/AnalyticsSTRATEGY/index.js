@@ -5,6 +5,8 @@ import RiskManagement from '../../Services/RiskManagement';
 import Strategy from '../../Services/Strategy.js';
 import Chart from '../Chart';
 import store from '../../Store/configureStore.js';
+import STOCHASTIC from '../../Services/indicators/STOCHASTIC.js'
+import MA from '../../Services/indicators/MA.js'
 
 class AnalyticsSTRATEGY extends Component {
   constructor(props) {
@@ -29,8 +31,33 @@ class AnalyticsSTRATEGY extends Component {
     const strategy = new Strategy(riskManagement, MoneyManagerParams, Strategies);
     strategy.simulate(companyData);
 
+      const stochastic = new STOCHASTIC(this.kPeriod, this.dPeriod, this.smooth, this.bottomLevel, this.topLevel);
+      const stochasticResults = stochastic.calculate(companyData.Close, companyData.High, companyData.Low);
     this.setState({
       data: companyData,
+     scatterSTOCHASTIC: {
+          Name: 'STOCHASTIC',
+          Date: companyData.Date,
+          Values: stochasticResults.K
+        },
+        scatterD: {
+          Name: 'D',
+          Date: companyData.Date,
+          Values: stochasticResults.D
+        },
+        fillAreaLow: {
+          Date: companyData.Date,
+          Values: new Array(companyData.Date.length).fill(20)
+        },
+        fillAreaHeight: {
+          Date: companyData.Date,
+          Values: new Array(companyData.Date.length).fill(80)
+        },
+      scatterMA5: {
+          Name: 'MA5',
+          Date: companyData.Date,
+          Values: new MA(5).calculate(companyData.Close)
+        },
       scatterBOLLINGERTop: {
         Name: 'B_Upper',
         Date: companyData.Date,
@@ -67,9 +94,15 @@ class AnalyticsSTRATEGY extends Component {
      <div>
         <Chart name='AnalyticsSTRATEGY' 
           candlestick={this.state.data}
+          scatterMA5={this.state.scatterMA5}
           fillAreaLow={this.state.scatterBOLLINGERBottom}
           fillAreaHeight={this.state.scatterBOLLINGERTop}
         />
+        <Chart name='AnalyticsSTOCHASTIC'
+          scatterSTOCHASTIC={this.state.scatterSTOCHASTIC}
+          scatterD={this.state.scatterD}
+          fillAreaLow={this.state.fillAreaLow}
+          fillAreaHeight={this.state.fillAreaHeight}/>
       </div>
     )
   }
@@ -82,3 +115,8 @@ const mapStateTocompanyData = store => {
 
 
 export default connect(mapStateTocompanyData)(AnalyticsSTRATEGY)
+      // scattertrail: {
+      //   Name: 'TRAIL',
+      //   Date: companyData.Date,
+      //   Values: strategy.positionController.trail['2017-03-22'],
+      // },
