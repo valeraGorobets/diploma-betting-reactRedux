@@ -7,7 +7,6 @@ class Chart extends Component {
       this.state = {
         data: [],
         layout: {
-          width: 900,
           height: 500,
           dragmode: 'zoom',
           margin: {
@@ -53,10 +52,10 @@ class Chart extends Component {
 	            name: Name,
 	            x: Date,
 	            close: Close,
-	            decreasing: { line: { color: 'red' } },
+	            decreasing: {line: {color: 'red'}},
 	            high: High,
-	            increasing: { line: { color: 'green' } },
-	            line: { color: 'rgba(31,119,180,1)' },
+	            increasing: {line: {color: 'green'}},
+	            line: {color: 'rgba(31,119,180,1)'},
 	            low: Low,
 	            open: Open,
 	            type: 'candlestick',
@@ -113,13 +112,13 @@ class Chart extends Component {
       }
       this.setState({
         data: newDataArray,
-        layout: Object.assign(this.state.layout, { title: nextProps.name })
+        layout: Object.assign(this.state.layout, {title: nextProps.name})
       });
     }
 
     render() {
     	return ( 
-        <Plot data = { this.state.data } layout = { this.state.layout }/>
+        <Plot data={this.state.data} layout={this.state.layout}/>
       )
     }
 }
