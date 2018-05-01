@@ -3,10 +3,10 @@ import {Type, Status} from './position/PositionConstants.js';
 import MoneyManager from './MoneyManager.js';
 
 class STRATEGY {
-  constructor(riskManagement, ...strategies) {
+  constructor(riskManagement, MoneyManagerParams, strategies) {
     this.riskManagement = riskManagement;
     this.strategies = strategies;
-    this.moneyManager = new MoneyManager(1000, 0.93);
+    this.moneyManager = new MoneyManager(MoneyManagerParams.startBank, MoneyManagerParams.propability, MoneyManagerParams.kellyFraction);
     this.positionController = new PositionController(this.moneyManager);
   }
 
@@ -21,12 +21,24 @@ class STRATEGY {
       let knownLow = Low.slice(0, i);
       let knownHigh = High.slice(0, i);
       let knownDate = Date.slice(0, i);
-      this.positionController.checkForClosingPosition(this.dataXdaysBefore(knownDate), this.dataXdaysBefore(knownLow), this.dataXdaysBefore(knownHigh));
-      this.positionController.trailStopLoss(i, knownClose, this.dataXdaysBefore(knownLow), this.dataXdaysBefore(knownHigh), this.dataXdaysBefore(knownLow, 1),this.dataXdaysBefore(knownHigh, 1));
+      
+      this.positionController.checkForClosingPosition (
+        this.dataXdaysBefore(knownDate), 
+        this.dataXdaysBefore(knownLow), 
+        this.dataXdaysBefore(knownHigh)
+      );
+      
+      this.positionController.trailStopLoss(
+        i, knownClose, 
+        this.dataXdaysBefore(knownLow), 
+        this.dataXdaysBefore(knownHigh), 
+        this.dataXdaysBefore(knownLow, 1),
+        this.dataXdaysBefore(knownHigh, 1)
+      );
       
       //morining
       let todayOpenPrice = Open[i];
-      let shoulInvestArray = this.strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy))
+      let shoulInvestArray = this.strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy, knownHigh, knownLow))
         .filter((value, index, self) => self.indexOf(value) === index);
 
       let positionType = shoulInvestArray.length === 1 ? shoulInvestArray[0] : Type.NONE;

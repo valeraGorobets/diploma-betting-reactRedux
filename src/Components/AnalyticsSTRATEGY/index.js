@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import MA from '../../Services/indicators/MA';
 import BOLLINGER from '../../Services/indicators/BOLLINGER';
 import RiskManagement from '../../Services/RiskManagement';
 import Strategy from '../../Services/Strategy.js';
@@ -8,68 +7,64 @@ import Chart from '../Chart';
 import store from '../../Store/configureStore.js';
 
 class AnalyticsSTRATEGY extends Component {
-    constructor(props) {
-      super(props);
-      this.state = {};
-      store.subscribe(() => console.log(store.getState()))
+  constructor(props) {
+    super(props);
+    this.state = {};
+    store.subscribe(() => this.run(store.getState()))
+    this.run();
+  }
+
+  run(state) {
+    if(!state){
+      return;
     }
+    const {companyData, BOLLINGERParams, AllowedRisk, MoneyManagerParams, Strategies} = state;
+    const bollingerResults = new BOLLINGER(BOLLINGERParams.period, BOLLINGERParams.stDeviation).calculate(companyData.Close);
 
-    componentWillReceiveProps(nextProps) {
-      console.log(store.getState());
-      const props = nextProps.companyData;
-      const ma5 = new MA(5);
-      const bollingerResults = new BOLLINGER().calculate(props.Close);
+    const riskManagement = new RiskManagement(AllowedRisk);
+    const strategy = new Strategy(riskManagement, MoneyManagerParams, Strategies);
+    strategy.simulate(companyData);
 
-      const riskManagement = new RiskManagement();
-      const strategy = new Strategy(riskManagement, ma5);
-      strategy.simulate(props);
+    this.setState({
+      data: companyData,
+      scattertrail:{
+        Name: 'trail',
+        Date: companyData.Date,
+        Values: strategy.positionController.trail['2017-12-06']
+      },
+      scatterBOLLINGERTop: {
+        Name: 'B_Upper',
+        Date: companyData.Date,
+        Values: bollingerResults.upper,
+        showlegend: true
+      },
+      scatterBOLLINGERBottom: {
+        Name: 'B_Lower',
+        Date: companyData.Date,
+        Values: bollingerResults.lower,
+        showlegend: true
+      }
+    });
+  }
 
-      this.setState({
-        data: props,
-        scatterMA5:{
-          Name: 'ma5',
-          Date: props.Date,
-          Values: ma5.calculate(props.Close)
-        },
-        scattertrail:{
-          Name: 'trail',
-          Date: props.Date,
-          Values: strategy.positionController.trail['2018-04-04']
-        },
-        scatterBOLLINGERTop: {
-          Name: 'B_Upper',
-          Date: props.Date,
-          Values: bollingerResults.upper,
-          showlegend: true
-        },
-        scatterBOLLINGERBottom: {
-          Name: 'B_Lower',
-          Date: props.Date,
-          Values: bollingerResults.lower,
-          showlegend: true
-        }
-      });
-    }
-
-    render() {
-      return ( 
-       <div>
-          <Chart name='AnalyticsSTRATEGY' 
-            candlestick={this.state.data}
-            scatterMA5={this.state.scatterMA5}
-            scattertrail={this.state.scattertrail}
-            fillAreaLow={this.state.scatterBOLLINGERBottom}
-            fillAreaHeight={this.state.scatterBOLLINGERTop}
-          />
-        </div>
-      )
-    }
+  render() {
+    return ( 
+     <div>
+        <Chart name='AnalyticsSTRATEGY' 
+          candlestick={this.state.data}
+          scattertrail={this.state.scattertrail}
+          fillAreaLow={this.state.scatterBOLLINGERBottom}
+          fillAreaHeight={this.state.scatterBOLLINGERTop}
+        />
+      </div>
+    )
+  }
 }
-const mapStateToProps = store => {
+const mapStateTocompanyData = store => {
   return {
     obj: store.obj
   }
 }
 
 
-export default connect(mapStateToProps)(AnalyticsSTRATEGY)
+export default connect(mapStateTocompanyData)(AnalyticsSTRATEGY)

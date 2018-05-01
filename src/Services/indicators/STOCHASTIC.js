@@ -22,7 +22,7 @@ class STOCHASTIC {
     }
   }
 
-  shouldInvest(array, highPricesArray, lowPricesArray, isPartOfStrategy) {
+  shouldInvest(array, isPartOfStrategy, highPricesArray, lowPricesArray) {
     const todayStoch = this.count(array, highPricesArray, lowPricesArray);
     array.pop();
     highPricesArray.pop();
