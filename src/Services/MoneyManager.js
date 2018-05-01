@@ -5,8 +5,16 @@ export default class MoneyManager {
     this.startBank = startBank;
     this.currentBank = startBank;
     this.moneyFromShort = 0;
-    this.propability = propability;
+    this.propability = this.transformPropability(propability);
     this.kellyFraction = kellyFraction;
+  }
+
+  transformPropability(propability) {
+    return propability > 1 ? propability / 100 : propability;
+  }
+
+  setPropability(propability) {
+    this.propability = this.transformPropability(propability);
   }
 
   openPosition(position) {
