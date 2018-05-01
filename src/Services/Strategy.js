@@ -1,6 +1,8 @@
 import PositionController from './position/PositionController.js';
 import {Type, Status} from './position/PositionConstants.js';
 import MoneyManager from './MoneyManager.js';
+import store from '../Store/configureStore.js';
+import { configApp} from '../Actions/index.js';
 
 class STRATEGY {
   constructor(riskManagement, MoneyManagerParams, strategies) {
@@ -67,6 +69,17 @@ class STRATEGY {
 
     const trail = this.positionController.trail;
     this.print(trail, 'trail');
+    store.dispatch(configApp({
+      currentBank,
+      positionsReport: {
+        all: positions.length,
+        profitable: positions.filter(pos => pos.profitInPercent > 0).length,
+        zero: positions.filter(pos => pos.profitInPercent === 0).length,
+        unprofitable: positions.filter(pos => pos.profitInPercent < 0).length,
+      },
+      profitMoreThanNull
+    }));
+
   }
 
   print(what, description = '') {
