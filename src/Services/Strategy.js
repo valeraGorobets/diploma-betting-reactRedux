@@ -5,10 +5,11 @@ import store from '../Store/configureStore.js';
 import { configApp} from '../Actions/index.js';
 
 class STRATEGY {
-  constructor(riskManagement, MoneyManagerParams, strategies) {
+  constructor(riskManagement, MoneyManagerParams, strategies, autoMode) {
     this.riskManagement = riskManagement;
     this.MoneyManagerParams = MoneyManagerParams;
     this.strategies = strategies;
+    this.autoMode = autoMode;
     this.probability = 0;
     this.savedPositionsFromLearning = [];
     this.moneyManager = new MoneyManager(MoneyManagerParams.startBank, MoneyManagerParams.probability, MoneyManagerParams.kellyFraction);
@@ -16,14 +17,45 @@ class STRATEGY {
   }
 
   simulate(props) {
+    let max = {
+      maxCurrentBank: 0,
+      maxBankStrategy: []
+    }
+    let maxCurrentBank = 0;
+    let maxBankStrategy = [];
+
     const learningPart = this.getThird(props);
-    this.invest(learningPart);
+    if(this.autoMode) {
+      this.strategies.forEach(strategy => {
+        const currentBank = this.invest(learningPart, strategy);
+        if(currentBank > max.maxCurrentBank) {
+          max.maxCurrentBank = currentBank;
+          max.maxBankStrategy = strategy;
+          max.moneyManager = this.moneyManager;
+          max.positionController = this.positionController;
+        }
+        this.moneyManager = new MoneyManager(this.MoneyManagerParams.startBank, this.MoneyManagerParams.probability, this.MoneyManagerParams.kellyFraction);
+        this.positionController = new PositionController(this.moneyManager);
+      })
+    } else {
+      this.invest(learningPart, this.strategies);
+    }
+    this.getReport();
+
+    const investmentPart = this.getRest(props);
+
+    if(this.autoMode) {
+      this.probability = this.profitMoreThanNull(max.positionController.positions) || 0;
+      this.strategies = max.maxBankStrategy
+      this.savedPositionsFromLearning = max.positionController.positions;
+    } 
 
     this.moneyManager = new MoneyManager(this.MoneyManagerParams.startBank, this.probability, this.MoneyManagerParams.kellyFraction);
     this.positionController = new PositionController(this.moneyManager);
-
-    const investmentPart = this.getRest(props);
-    this.invest(investmentPart, true);
+    this.invest(investmentPart, this.strategies, true);
+    
+    this.getReport();
+    this.updateStore(this.positionController.positions);
   }
 
   getThird(props) {
@@ -52,9 +84,9 @@ class STRATEGY {
     return newObj;
   }
 
-  invest(props, investMode) {
+  invest(props, strategies, investMode) {
     const {Date, Open, Close, High, Low} = props;
-    const isPartOfStrategy = this.strategies.length === 1 ? false : true;
+    const isPartOfStrategy = strategies.length === 1 ? false : true;
 
     for(let i = 30; i < Close.length; i++) {
       
@@ -84,12 +116,11 @@ class STRATEGY {
       
       //morining
       let todayOpenPrice = Open[i];
-      let shoulInvestArray = this.strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy, knownHigh, knownLow))
+      let shoulInvestArray = strategies.map(strategy => strategy.shouldInvest(knownClose, isPartOfStrategy, knownHigh, knownLow))
 
         shoulInvestArray = shoulInvestArray.filter((value, index, self) => self.indexOf(value) === index);
 
       let positionType = shoulInvestArray.length === 1 ? shoulInvestArray[0] : Type.NONE;
-      if( Date[i] === '2017-03-22'){debugger;}
       if(positionType !== Type.NONE && this.riskManagement.isInvestmentPossible(knownClose, positionType)){
         const bollingerBands = this.riskManagement.getBands(Close.slice(0, i));
         this.positionController.openPosition(positionType, Date[i], todayOpenPrice, bollingerBands);
@@ -97,37 +128,42 @@ class STRATEGY {
     }
 
     this.positionController.closeAllPositions(Date.slice().pop());
-    this.getReport();
+    return this.moneyManager.currentBank;
   }
 
   getReport() {
+    console.log('//////////////////////////////////////////////////////////')
     const positions = this.positionController.positions;
     this.savedPositionsFromLearning = positions;
     this.print(positions, 'positions');
     
     const simleView = this.simleView(positions);
-    this.print(simleView, 'simleView');
+    // this.print(simleView, 'simleView');
     
     const profitMoreThanNull = this.profitMoreThanNull(positions) || 0;
     this.probability = profitMoreThanNull;
-    this.print(profitMoreThanNull, 'profitMoreThanNull');
+    // this.print(profitMoreThanNull, 'profitMoreThanNull');
 
     const currentBank = this.moneyManager.currentBank;
     this.print(currentBank, 'currentBank');
 
     const trail = this.positionController.trail;
-    this.print(trail, 'trail');
+    // this.print(trail, 'trail');
+    
+
+  }
+
+  updateStore(positions){
     store.dispatch(configApp({
-      currentBank,
+      currentBank: this.moneyManager.currentBank,
       positionsReport: {
         all: positions.length,
         profitable: positions.filter(pos => pos.profitInPercent > 0).length,
         zero: positions.filter(pos => pos.profitInPercent === 0).length,
         unprofitable: positions.filter(pos => pos.profitInPercent < 0).length,
       },
-      profitMoreThanNull
+      profitMoreThanNull: this.profitMoreThanNull(positions) || 0
     }));
-
   }
 
   print(what, description = '') {

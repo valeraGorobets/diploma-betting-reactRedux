@@ -24,15 +24,15 @@ class AnalyticsSTRATEGY extends Component {
     if(!state || this.sameState(state)){
       return;
     }
-    const {companyData, BOLLINGERParams, AllowedRisk, MoneyManagerParams, Strategies} = state;
+    const {companyData, BOLLINGERParams, AllowedRisk, MoneyManagerParams, Strategies, autoMode} = state;
     const bollingerResults = new BOLLINGER(BOLLINGERParams.period, BOLLINGERParams.stDeviation).calculate(companyData.Close);
 
     const riskManagement = new RiskManagement(AllowedRisk);
-    const strategy = new Strategy(riskManagement, MoneyManagerParams, Strategies);
+    const strategy = new Strategy(riskManagement, MoneyManagerParams, Strategies, autoMode);
     strategy.simulate(companyData);
 
-      const stochastic = new STOCHASTIC(this.kPeriod, this.dPeriod, this.smooth, this.bottomLevel, this.topLevel);
-      const stochasticResults = stochastic.calculate(companyData.Close, companyData.High, companyData.Low);
+    const stochastic = new STOCHASTIC(this.kPeriod, this.dPeriod, this.smooth, this.bottomLevel, this.topLevel);
+    const stochasticResults = stochastic.calculate(companyData.Close, companyData.High, companyData.Low);
     this.setState({
       data: companyData,
      scatterSTOCHASTIC: {
@@ -53,10 +53,10 @@ class AnalyticsSTRATEGY extends Component {
           Date: companyData.Date,
           Values: new Array(companyData.Date.length).fill(80)
         },
-      scatterMA5: {
-          Name: 'MA5',
+      scatterMA21: {
+          Name: 'MA21',
           Date: companyData.Date,
-          Values: new MA(5).calculate(companyData.Close)
+          Values: new MA(21).calculate(companyData.Close)
         },
       scatterBOLLINGERTop: {
         Name: 'B_Upper',
@@ -94,7 +94,7 @@ class AnalyticsSTRATEGY extends Component {
      <div>
         <Chart name='AnalyticsSTRATEGY' 
           candlestick={this.state.data}
-          scatterMA5={this.state.scatterMA5}
+          scatterMA21={this.state.scatterMA21}
           fillAreaLow={this.state.scatterBOLLINGERBottom}
           fillAreaHeight={this.state.scatterBOLLINGERTop}
         />

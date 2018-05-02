@@ -21,6 +21,22 @@ const indicators = {
   'MACD': new MACD(12, 26, 9),
   'STOCHASTIC': new STOCHASTIC(14)
 }
+  // [indicators['MA(9)']],
+  // [indicators['MA(21)']],
+  // [indicators['RSI']],
+  // [indicators['MACD']],
+  // [indicators['STOCHASTIC']],
+  // [indicators['MA(5)'], indicators['MA(9)']],
+  // [indicators['MA(5)'], indicators['MA(21)']],
+  // [indicators['MA(5)'], indicators['RSI']],
+  // [indicators['MA(5)'], indicators['MACD']],
+  // [indicators['MA(5)'], indicators['STOCHASTIC']]
+
+const indicatorsList = [
+  [indicators['MA(5)']]
+
+
+];
 
 export default class ConfigAndAnalytics extends Component {
   constructor(props) {
@@ -63,12 +79,19 @@ export default class ConfigAndAnalytics extends Component {
     if(newState && this.state.currentBank === newState.currentBank){
       return;
     } else {
+      const {profitable, zero, unprofitable} = newState.positionsReport;
+      let Values = [];
+      if(profitable === 0 && zero === 0 && unprofitable === 0) {
+        Values = [];
+      } else {
+        Values = [profitable, zero, unprofitable];
+      }
       this.setState({
         currentBank: newState.currentBank,
         positionsReport: {
           Name: 'positionsReport',
           Labels : ['C Прибылью', 'В 0', 'С Убытком'],
-          Values: [newState.positionsReport.profitable, newState.positionsReport.zero, newState.positionsReport.unprofitable],
+          Values: Values,
           all: newState.positionsReport.all
         },
         profitMoreThanNull: newState.profitMoreThanNull
@@ -97,7 +120,17 @@ export default class ConfigAndAnalytics extends Component {
 
   handleFormSubmit(event) {
     event.preventDefault();
-    this.StockDataService.requestStocksFromLocal(this.state.companyName).then(response => {
+    const responsePromise = this.StockDataService.requestStocksFromLocal(this.state.companyName);
+    
+    if(this.state.manualMode) {
+      this.saveState(responsePromise, [...this.selectedCheckboxes]);
+    } else {
+      this.saveState(responsePromise, indicatorsList, true);
+    }
+  }
+
+  saveState(responsePromise, Strategies, autoMode) {
+    responsePromise.then(response => {
       this.setState({
         companyName: this.state.companyName,
         companyData: response,
@@ -111,7 +144,8 @@ export default class ConfigAndAnalytics extends Component {
         Date: response.Date,
         companyName: this.state.companyName,
         companyData: response,
-        Strategies: [...this.selectedCheckboxes] 
+        Strategies: Strategies,
+        autoMode: autoMode
       }));
       this.forceUpdate();
     })
